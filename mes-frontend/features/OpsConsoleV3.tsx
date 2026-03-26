@@ -922,7 +922,7 @@ export function OpsConsoleV3({
                     <header className={styles.topNavbar}>
                         <div className={styles.breadcrumb}>
                             <Icon icon="box" />
-                            <button type="button" className={styles.breadcrumbButton} onClick={() => handleTabSwitch('runs')}>Operations Console</button>
+                            <button type="button" className={styles.breadcrumbButton} onClick={() => handleTabSwitch('runs')}>보해 운영 웹</button>
                             <Icon icon="chevron-right" />
                             <button type="button" className={styles.breadcrumbButton} onClick={() => setViewMode('explorer')}>{navTitle}</button>
                             {isRunsTab && viewMode === 'object' && activeRun && (

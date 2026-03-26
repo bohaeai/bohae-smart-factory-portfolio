@@ -6,8 +6,8 @@ import type { LineState, EquipmentState, TwinEvent } from "./hooks/useTwinData";
 import styles from "./TwinDashboard.module.css";
 
 /* ──────────────────────────────────────────
-   Factory Digital Twin Dashboard
-   Public portfolio sample
+   보해 디지털 트윈 — Palantir-class Dashboard
+   Apple-grade visual design
    ────────────────────────────────────────── */
 
 function formatNum(v: number | null | undefined, fallback = "—"): string {
@@ -278,7 +278,7 @@ export function TwinDashboard() {
       <header className={styles.header}>
         <div className={styles.headerLeft}>
           <div>
-            <div className={styles.headerTitle}>Factory Digital Twin</div>
+            <div className={styles.headerTitle}>보해 디지털 트윈</div>
             <div className={styles.headerSub}>공장 실시간 상태 · 설비 · 센서 · 이벤트</div>
           </div>
         </div>

@@ -28,7 +28,7 @@ export function MesPageShell({
     children,
 }: MesPageShellProps) {
     const defaultBreadcrumbs: BreadcrumbProps[] = breadcrumbs ?? [
-        { text: "Factory OS", href: FACTORY_OS_ROUTES.dashboardHome },
+        { text: "보해 Factory OS", href: FACTORY_OS_ROUTES.dashboardHome },
         { text: title },
     ];
 

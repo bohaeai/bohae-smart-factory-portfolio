@@ -4308,7 +4308,7 @@ def _start_auth_self_service_flow(
         else:
             _send_otp_sms(
                 to=registered_phone,
-                text=f"[Factory OS] 인증번호: {otp} ({max(1, ttl_sec // 60)}분 유효)",
+                text=f"[보해양조] Factory OS 인증번호: {otp} ({max(1, ttl_sec // 60)}분 유효)",
                 app_id=_trim_profile_text(os.getenv("OPS_SOLAPI_APP_ID")) or None,
             )
         _record_auth_login_event(

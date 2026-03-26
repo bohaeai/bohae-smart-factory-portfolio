@@ -153,7 +153,7 @@ export function OpsConsoleV2() {
       <div className={styles.loginWrap}>
         <Card className={styles.loginCard}>
           <SessionLoginPanel
-            title="Operations Console V2"
+            title="보해 공장운영체제 V2"
             subtitle="사번과 비밀번호로 세션 로그인 후 진행합니다."
           />
         </Card>

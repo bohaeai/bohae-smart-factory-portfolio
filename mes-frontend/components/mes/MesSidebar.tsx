@@ -159,7 +159,7 @@ export function MesSidebar() {
                             <PortfolioLogo
                                 variant="mark"
                                 className={collapsed ? styles.logoMarkCollapsed : styles.logoMark}
-                                alt="Factory logo"
+                                alt="보해양조 로고"
                             />
                         </span>
                         {!collapsed && (

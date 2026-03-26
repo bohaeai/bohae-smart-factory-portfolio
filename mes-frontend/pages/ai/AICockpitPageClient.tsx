@@ -119,7 +119,7 @@ export default function AICockpitPageClient() {
     {
       id: `assistant-init-${Date.now()}`,
       role: "assistant",
-      content: "Factory AI assistant sample입니다. 생산계획, 설비, 품질, 에너지 같은 운영 주제를 질의하는 공개용 예시 화면입니다.",
+      content: "보해양조 AI 어시스턴트입니다. 생산계획, 설비, 품질, 에너지 등 공장 운영에 관해 질문하세요. 현재 정책 응답 모드로 동작합니다.",
       createdAt: new Date().toISOString(),
     },
   ]);
