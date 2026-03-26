@@ -11,7 +11,7 @@ def _read(path: str) -> str:
 
 
 def test_feedback_workbench_only_allows_judging_on_live_source() -> None:
-    text = _read("mes_frontend/src/features/feedback/FeedbackWorkbench.tsx")
+    text = _read("bohae_ops_web/src/features/feedback/FeedbackWorkbench.tsx")
 
     assert "const canJudgeRole = getRoleCanJudge(user.role);" in text
     assert "const scoreEnabled = visibleSourceMode === \"LIVE\";" in text
@@ -20,9 +20,9 @@ def test_feedback_workbench_only_allows_judging_on_live_source() -> None:
 
 
 def test_feedback_leaderboard_and_score_cards_hide_non_live_tallies() -> None:
-    leaderboard = _read("mes_frontend/src/features/feedback/FeedbackLeaderboard.tsx")
-    summary = _read("mes_frontend/src/features/feedback/ScoreSummaryCards.tsx")
-    inbox_panel = _read("mes_frontend/src/features/task-inbox/components/TaskContributionPanel.tsx")
+    leaderboard = _read("bohae_ops_web/src/features/feedback/FeedbackLeaderboard.tsx")
+    summary = _read("bohae_ops_web/src/features/feedback/ScoreSummaryCards.tsx")
+    inbox_panel = _read("bohae_ops_web/src/features/task-inbox/components/TaskContributionPanel.tsx")
 
     assert "if (!scoreEnabled) {" in leaderboard
     assert "확정 점수와 순위를 보여주지 않습니다." in leaderboard

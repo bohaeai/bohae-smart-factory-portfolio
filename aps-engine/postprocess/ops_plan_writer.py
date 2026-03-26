@@ -807,8 +807,8 @@ def _write_ops_summary_sheet(
         {"항목": f"총 생산 수량({qty_unit_label})", "값": int(round(qty_total)), "설명": "세그먼트 기준 합계"},
         {"항목": "총 RUN 시간(분)", "값": int(round(float(seg["DUR_MIN"].sum()))), "설명": "실생산 시간 합계"},
         {"항목": "총 SETUP 시간(분)", "값": int(round(float(seg["SETUP_IN_MIN"].sum()))), "설명": "전환/세척 포함 준비시간"},
-        {"항목": "사용 라인 수", "값": int(seg["LINE_ID"].nunique()) if "LINE_ID" in seg.columns else 0, "설명": "실ZERO 사용된 라인 수"},
-        {"항목": "사용 품목 수", "값": int(seg["PRODUCT_ID"].nunique()) if "PRODUCT_ID" in seg.columns else 0, "설명": "실ZERO 생산된 품목 수"},
+        {"항목": "사용 라인 수", "값": int(seg["LINE_ID"].nunique()) if "LINE_ID" in seg.columns else 0, "설명": "실제로 사용된 라인 수"},
+        {"항목": "사용 품목 수", "값": int(seg["PRODUCT_ID"].nunique()) if "PRODUCT_ID" in seg.columns else 0, "설명": "실제로 생산된 품목 수"},
         {"항목": "무결성 점검", "값": "PASS" if integrity_ok else "FAIL", "설명": f"grid_qty_diff={grid_diff:.3f}, mismatch={mismatch_cnt}"},
         {"항목": "권장 확인 시트", "값": "01_주간생산계획 / 02_라인별작업지시 / 03_품목요약", "설명": "운영자 상세 검토 순서"},
     ]

@@ -172,7 +172,7 @@ def _combine_pull_ahead_status(result_m: Dict[str, Any], result_m1: Dict[str, An
 
 
 def main() -> None:
-    ap = argparse.ArgumentParser(description="Portfolio APS v21 (modular)")
+    ap = argparse.ArgumentParser(description="Bohae APS v21 (modular)")
 
     ap.add_argument("--source", choices=["excel", "db"], default="excel")
     ap.add_argument("--run-id", default="", help="Optional external run id for trace consistency")
@@ -352,64 +352,64 @@ def main() -> None:
         action="store_true",
         help="When --frontend-policy-strict is set, keep MULTI lines available for production candidate filtering.",
     )
-    ap.add_argument("--forbid-family_alpha-on-b3", action="store_true", help="Hard-ban FAMILY_ALPHA family on B3 lines.")
-    ap.add_argument("--forbid-family_beta-on-b4", action="store_true", help="Hard-ban FAMILY_BETA family on B4 lines.")
+    ap.add_argument("--forbid-leaf-on-b3", action="store_true", help="Hard-ban 잎새 family on B3 lines.")
+    ap.add_argument("--forbid-coolpis-on-b4", action="store_true", help="Hard-ban 쿨피스 family on B4 lines.")
     ap.add_argument(
-        "--family_alpha-allowed-lines",
+        "--leaf-allowed-lines",
         default="",
-        help="Comma-separated allowed lines for FAMILY_ALPHA family (strict mode default: LINE_A_B1_02,LINE_A_B1_03).",
+        help="Comma-separated allowed lines for 잎새 family (strict mode default: LINE_JSNG_B1_02,LINE_JSNG_B1_03).",
     )
     ap.add_argument(
-        "--family_beta-allowed-lines",
+        "--coolpis-allowed-lines",
         default="",
-        help="Comma-separated allowed lines for FAMILY_BETA family (strict mode default: LINE_A_B3_01).",
+        help="Comma-separated allowed lines for 쿨피스 family (strict mode default: LINE_JSNG_B3_01).",
     )
     ap.add_argument(
-        "--series_gamma-allowed-lines",
+        "--sprint-allowed-lines",
         default="",
-        help="Comma-separated allowed lines for SERIES_GAMMA series (strict mode default: LINE_A_B4_01).",
+        help="Comma-separated allowed lines for 스프린트 series (strict mode default: LINE_JSNG_B4_01).",
     )
     ap.add_argument(
-        "--family_beta-peach-allowed-lines",
+        "--coolpis-peach-allowed-lines",
         default="",
-        help="Comma-separated allowed lines for FAMILY_BETA PEACH SKU (strict mode default: LINE_A_B3_01).",
+        help="Comma-separated allowed lines for 쿨피스 복숭아 SKU (strict mode default: LINE_JSNG_B3_01).",
     )
     ap.add_argument(
-        "--sku_alpha-640-allowed-lines",
+        "--yeopsaeju-640-allowed-lines",
         default="",
-        help="Comma-separated allowed lines for SKU_ALPHA 16%% 640ml SKU (strict mode default: LINE_A_B1_PET_A_1).",
+        help="Comma-separated allowed lines for 잎새주 16%% 640ml SKU (strict mode default: LINE_JSNG_B1_PET_A_1).",
     )
     ap.add_argument(
-        "--sku_alpha-200-allowed-lines",
+        "--yeopsaeju-200-allowed-lines",
         default="",
-        help="Comma-separated allowed lines for SKU_ALPHA 16%% 200ml SKU (strict mode default: LINE_A_B1_PET_B).",
+        help="Comma-separated allowed lines for 잎새주 16%% 200ml SKU (strict mode default: LINE_JSNG_B1_PET_B).",
     )
     ap.add_argument(
-        "--sku_delta-allowed-lines",
+        "--maesilwon-allowed-lines",
         default="",
-        help="Comma-separated allowed lines for SKU_DELTA SKU (strict mode default: LINE_A_B3_02).",
+        help="Comma-separated allowed lines for 매실원 SKU (strict mode default: LINE_JSNG_B3_02).",
     )
     ap.add_argument(
-        "--sku_epsilon18000-allowed-lines",
+        "--maehyang18000-allowed-lines",
         default="",
-        help="Comma-separated allowed lines for SKU_EPSILON 18000ml SKU (strict mode default: LINE_A_B3_02).",
+        help="Comma-separated allowed lines for 매향 18000ml SKU (strict mode default: LINE_JSNG_B3_02).",
     )
     ap.add_argument(
-        "--brand_zeta_zero-allowed-lines",
+        "--welchzero-allowed-lines",
         default="",
-        help="Comma-separated allowed lines for BRAND_ZETAZERO SKU (strict mode default: LINE_A_B4_01).",
+        help="Comma-separated allowed lines for 웰치제로 SKU (strict mode default: LINE_JSNG_B4_01).",
     )
     ap.add_argument(
-        "--reserve-b3-can-for-family_beta",
+        "--reserve-b3-can-for-coolpis",
         action=argparse.BooleanOptionalAction,
         default=None,
-        help="Reserve LINE_A_B3_01 for FAMILY_BETA family only (strict mode default: True).",
+        help="Reserve LINE_JSNG_B3_01 for Coolpis family only (strict mode default: True).",
     )
     ap.add_argument(
         "--enforce-b3-can-pet-mutex",
         action=argparse.BooleanOptionalAction,
         default=None,
-        help="Hard constraint: LINE_A_B3_01 and LINE_A_B3_02 cannot run simultaneously.",
+        help="Hard constraint: LINE_JSNG_B3_01 and LINE_JSNG_B3_02 cannot run simultaneously.",
     )
     ap.add_argument("--fail-on-missing-erp-mapping", action="store_true", help="Contract fail if demanded products miss ERP mapping.")
     ap.add_argument(
@@ -513,7 +513,7 @@ def main() -> None:
     single_product_lines_csv = str(getattr(args, "single_product_lines", "") or "").strip()
     if frontend_policy_strict and not single_product_lines_csv:
         strict_default_single = str(
-            os.getenv("PORTFOLIO_STRICT_DEFAULT_SINGLE_PRODUCT_LINES", "") or ""
+            os.getenv("BOHAE_STRICT_DEFAULT_SINGLE_PRODUCT_LINES", "") or ""
         ).strip()
         if strict_default_single:
             single_product_lines_csv = strict_default_single
@@ -526,59 +526,59 @@ def main() -> None:
     forbidden_line_ids_csv = str(getattr(args, "forbidden_line_ids", "") or "").strip()
     if frontend_policy_strict and not forbidden_line_ids_csv:
         forbidden_line_ids_csv = str(
-            os.getenv("PORTFOLIO_STRICT_DEFAULT_FORBIDDEN_LINES", "") or ""
+            os.getenv("BOHAE_STRICT_DEFAULT_FORBIDDEN_LINES", "") or ""
         ).strip()
-    forbid_family_alpha_on_b3 = bool(getattr(args, "forbid_family_alpha_on_b3", False))
-    forbid_family_beta_on_b4 = bool(getattr(args, "forbid_family_beta_on_b4", False))
-    family_alpha_allowed_lines_csv = str(getattr(args, "family_alpha_allowed_lines", "") or "").strip()
-    family_beta_allowed_lines_csv = str(getattr(args, "family_beta_allowed_lines", "") or "").strip()
-    series_gamma_allowed_lines_csv = str(getattr(args, "series_gamma_allowed_lines", "") or "").strip()
-    family_beta_peach_allowed_lines_csv = str(getattr(args, "family_beta_peach_allowed_lines", "") or "").strip()
-    sku_alpha_640_allowed_lines_csv = str(getattr(args, "sku_alpha_640_allowed_lines", "") or "").strip()
-    sku_alpha_200_allowed_lines_csv = str(getattr(args, "sku_alpha_200_allowed_lines", "") or "").strip()
-    sku_delta_allowed_lines_csv = str(getattr(args, "sku_delta_allowed_lines", "") or "").strip()
-    sku_epsilon18000_allowed_lines_csv = str(getattr(args, "sku_epsilon18000_allowed_lines", "") or "").strip()
-    brand_zeta_zero_allowed_lines_csv = str(getattr(args, "brand_zeta_zero_allowed_lines", "") or "").strip()
-    reserve_b3_can_for_family_beta = (
-        bool(args.reserve_b3_can_for_family_beta)
-        if getattr(args, "reserve_b3_can_for_family_beta", None) is not None
+    forbid_leaf_on_b3 = bool(getattr(args, "forbid_leaf_on_b3", False))
+    forbid_coolpis_on_b4 = bool(getattr(args, "forbid_coolpis_on_b4", False))
+    leaf_allowed_lines_csv = str(getattr(args, "leaf_allowed_lines", "") or "").strip()
+    coolpis_allowed_lines_csv = str(getattr(args, "coolpis_allowed_lines", "") or "").strip()
+    sprint_allowed_lines_csv = str(getattr(args, "sprint_allowed_lines", "") or "").strip()
+    coolpis_peach_allowed_lines_csv = str(getattr(args, "coolpis_peach_allowed_lines", "") or "").strip()
+    yeopsaeju_640_allowed_lines_csv = str(getattr(args, "yeopsaeju_640_allowed_lines", "") or "").strip()
+    yeopsaeju_200_allowed_lines_csv = str(getattr(args, "yeopsaeju_200_allowed_lines", "") or "").strip()
+    maesilwon_allowed_lines_csv = str(getattr(args, "maesilwon_allowed_lines", "") or "").strip()
+    maehyang18000_allowed_lines_csv = str(getattr(args, "maehyang18000_allowed_lines", "") or "").strip()
+    welchzero_allowed_lines_csv = str(getattr(args, "welchzero_allowed_lines", "") or "").strip()
+    reserve_b3_can_for_coolpis = (
+        bool(args.reserve_b3_can_for_coolpis)
+        if getattr(args, "reserve_b3_can_for_coolpis", None) is not None
         else bool(frontend_policy_strict)
     )
-    if frontend_policy_strict and not family_alpha_allowed_lines_csv:
-        family_alpha_allowed_lines_csv = str(
-            os.getenv("PORTFOLIO_STRICT_DEFAULT_FAMILY_ALPHA_ALLOWED_LINES", "") or ""
+    if frontend_policy_strict and not leaf_allowed_lines_csv:
+        leaf_allowed_lines_csv = str(
+            os.getenv("BOHAE_STRICT_DEFAULT_LEAF_ALLOWED_LINES", "") or ""
         ).strip()
-    if frontend_policy_strict and not family_beta_allowed_lines_csv:
-        family_beta_allowed_lines_csv = str(
-            os.getenv("PORTFOLIO_STRICT_DEFAULT_FAMILY_BETA_ALLOWED_LINES", "LINE_A_B3_01") or ""
+    if frontend_policy_strict and not coolpis_allowed_lines_csv:
+        coolpis_allowed_lines_csv = str(
+            os.getenv("BOHAE_STRICT_DEFAULT_COOLPIS_ALLOWED_LINES", "LINE_JSNG_B3_01") or ""
         ).strip()
-    if frontend_policy_strict and not series_gamma_allowed_lines_csv:
-        series_gamma_allowed_lines_csv = str(
-            os.getenv("PORTFOLIO_STRICT_DEFAULT_SERIES_GAMMA_ALLOWED_LINES", "LINE_A_B4_01") or ""
+    if frontend_policy_strict and not sprint_allowed_lines_csv:
+        sprint_allowed_lines_csv = str(
+            os.getenv("BOHAE_STRICT_DEFAULT_SPRINT_ALLOWED_LINES", "LINE_JSNG_B4_01") or ""
         ).strip()
-    if frontend_policy_strict and not family_beta_peach_allowed_lines_csv:
-        family_beta_peach_allowed_lines_csv = str(
-            os.getenv("PORTFOLIO_STRICT_DEFAULT_FAMILY_BETA_PEACH_ALLOWED_LINES", "LINE_A_B3_01") or ""
+    if frontend_policy_strict and not coolpis_peach_allowed_lines_csv:
+        coolpis_peach_allowed_lines_csv = str(
+            os.getenv("BOHAE_STRICT_DEFAULT_COOLPIS_PEACH_ALLOWED_LINES", "LINE_JSNG_B3_01") or ""
         ).strip()
-    if frontend_policy_strict and not sku_alpha_640_allowed_lines_csv:
-        sku_alpha_640_allowed_lines_csv = str(
-            os.getenv("PORTFOLIO_STRICT_DEFAULT_SKU_ALPHA640_ALLOWED_LINES", "LINE_A_B1_PET_A_1") or ""
+    if frontend_policy_strict and not yeopsaeju_640_allowed_lines_csv:
+        yeopsaeju_640_allowed_lines_csv = str(
+            os.getenv("BOHAE_STRICT_DEFAULT_YEOPSAEJU640_ALLOWED_LINES", "LINE_JSNG_B1_PET_A_1") or ""
         ).strip()
-    if frontend_policy_strict and not sku_alpha_200_allowed_lines_csv:
-        sku_alpha_200_allowed_lines_csv = str(
-            os.getenv("PORTFOLIO_STRICT_DEFAULT_SKU_ALPHA200_ALLOWED_LINES", "LINE_A_B1_PET_B") or ""
+    if frontend_policy_strict and not yeopsaeju_200_allowed_lines_csv:
+        yeopsaeju_200_allowed_lines_csv = str(
+            os.getenv("BOHAE_STRICT_DEFAULT_YEOPSAEJU200_ALLOWED_LINES", "LINE_JSNG_B1_PET_B") or ""
         ).strip()
-    if frontend_policy_strict and not sku_delta_allowed_lines_csv:
-        sku_delta_allowed_lines_csv = str(
-            os.getenv("PORTFOLIO_STRICT_DEFAULT_SKU_DELTA_ALLOWED_LINES", "LINE_A_B3_02") or ""
+    if frontend_policy_strict and not maesilwon_allowed_lines_csv:
+        maesilwon_allowed_lines_csv = str(
+            os.getenv("BOHAE_STRICT_DEFAULT_MAESILWON_ALLOWED_LINES", "LINE_JSNG_B3_02") or ""
         ).strip()
-    if frontend_policy_strict and not sku_epsilon18000_allowed_lines_csv:
-        sku_epsilon18000_allowed_lines_csv = str(
-            os.getenv("PORTFOLIO_STRICT_DEFAULT_SKU_EPSILON18000_ALLOWED_LINES", "LINE_A_B3_02") or ""
+    if frontend_policy_strict and not maehyang18000_allowed_lines_csv:
+        maehyang18000_allowed_lines_csv = str(
+            os.getenv("BOHAE_STRICT_DEFAULT_MAEHYANG18000_ALLOWED_LINES", "LINE_JSNG_B3_02") or ""
         ).strip()
-    if frontend_policy_strict and not brand_zeta_zero_allowed_lines_csv:
-        brand_zeta_zero_allowed_lines_csv = str(
-            os.getenv("PORTFOLIO_STRICT_DEFAULT_BRAND_ZETA_ZERO_ALLOWED_LINES", "LINE_A_B4_01") or ""
+    if frontend_policy_strict and not welchzero_allowed_lines_csv:
+        welchzero_allowed_lines_csv = str(
+            os.getenv("BOHAE_STRICT_DEFAULT_WELCHZERO_ALLOWED_LINES", "LINE_JSNG_B4_01") or ""
         ).strip()
     enforce_b3_can_pet_mutex = (
         bool(args.enforce_b3_can_pet_mutex)
@@ -639,19 +639,19 @@ def main() -> None:
         frontend_policy_strict=(True if frontend_policy_strict else None),
         single_product_lines_csv=(single_product_lines_csv or None),
         forbid_ml_production=(True if forbid_ml_production else None),
-        forbid_family_alpha_on_b3=(True if forbid_family_alpha_on_b3 else None),
-        forbid_family_beta_on_b4=(True if forbid_family_beta_on_b4 else None),
+        forbid_leaf_on_b3=(True if forbid_leaf_on_b3 else None),
+        forbid_coolpis_on_b4=(True if forbid_coolpis_on_b4 else None),
         forbidden_line_ids_csv=(forbidden_line_ids_csv or None),
-        family_alpha_allowed_lines_csv=(family_alpha_allowed_lines_csv or None),
-        family_beta_allowed_lines_csv=(family_beta_allowed_lines_csv or None),
-        series_gamma_allowed_lines_csv=(series_gamma_allowed_lines_csv or None),
-        family_beta_peach_allowed_lines_csv=(family_beta_peach_allowed_lines_csv or None),
-        sku_alpha_640_allowed_lines_csv=(sku_alpha_640_allowed_lines_csv or None),
-        sku_alpha_200_allowed_lines_csv=(sku_alpha_200_allowed_lines_csv or None),
-        sku_delta_allowed_lines_csv=(sku_delta_allowed_lines_csv or None),
-        sku_epsilon18000_allowed_lines_csv=(sku_epsilon18000_allowed_lines_csv or None),
-        brand_zeta_zero_allowed_lines_csv=(brand_zeta_zero_allowed_lines_csv or None),
-        reserve_b3_can_for_family_beta=(reserve_b3_can_for_family_beta if frontend_policy_strict else None),
+        leaf_allowed_lines_csv=(leaf_allowed_lines_csv or None),
+        coolpis_allowed_lines_csv=(coolpis_allowed_lines_csv or None),
+        sprint_allowed_lines_csv=(sprint_allowed_lines_csv or None),
+        coolpis_peach_allowed_lines_csv=(coolpis_peach_allowed_lines_csv or None),
+        yeopsaeju_640_allowed_lines_csv=(yeopsaeju_640_allowed_lines_csv or None),
+        yeopsaeju_200_allowed_lines_csv=(yeopsaeju_200_allowed_lines_csv or None),
+        maesilwon_allowed_lines_csv=(maesilwon_allowed_lines_csv or None),
+        maehyang18000_allowed_lines_csv=(maehyang18000_allowed_lines_csv or None),
+        welchzero_allowed_lines_csv=(welchzero_allowed_lines_csv or None),
+        reserve_b3_can_for_coolpis=(reserve_b3_can_for_coolpis if frontend_policy_strict else None),
         enforce_b3_can_pet_mutex=(enforce_b3_can_pet_mutex if enforce_b3_can_pet_mutex is not None else None),
         fail_on_missing_erp_mapping=(True if fail_on_missing_erp_mapping else None),
         fail_on_policy_violation=(True if fail_on_policy_violation else None),

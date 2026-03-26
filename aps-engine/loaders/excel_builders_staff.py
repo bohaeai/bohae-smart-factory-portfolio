@@ -126,7 +126,7 @@ def build_staff_quals(sheets: Dict[str, pd.DataFrame], scenario: str) -> Dict[Tu
         if not raw_ln or not seat_type or not sid:
             continue
         # SSOT에서 세미콜론으로 여러 라인이 합쳐진 경우 분리
-        # 예: "LINE_A_B3_01;LINE_A_B3_02" → 각 라인에 개별 적용
+        # 예: "LINE_JSNG_B3_01;LINE_JSNG_B3_02" → 각 라인에 개별 적용
         line_ids = [x.strip() for x in raw_ln.split(";") if x.strip()]
         for ln in line_ids:
             out.setdefault((ln, seat_type), []).append(
@@ -142,7 +142,7 @@ def build_staff_quals(sheets: Dict[str, pd.DataFrame], scenario: str) -> Dict[Tu
         )
 
     # ── Building-group qualification inheritance ──
-    # Lines sharing the same building prefix (e.g. LINE_A_B3_01, LINE_A_B3_02)
+    # Lines sharing the same building prefix (e.g. LINE_JSNG_B3_01, LINE_JSNG_B3_02)
     # should share the same qualified staff pool.  SSOT often has incomplete coverage
     # (B3_01 has 46 staff, B3_02 only 7) — inherit missing qualifications automatically.
     # Evidence: semicolon-combined rows (B3_01;B3_02) in SSOT confirm shared pool intent.

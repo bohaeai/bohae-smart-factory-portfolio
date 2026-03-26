@@ -73,7 +73,7 @@ interface KioskControlClientProps {
 
 export function KioskControlClient({
   embedded = false,
-  initialLineId = "LINE_A_B1_01",
+  initialLineId = "LINE_JSNG_B1_01",
   initialDeviceId = "KIOSK_HALL_01",
   onChangeContext,
   onOpenMonitor,

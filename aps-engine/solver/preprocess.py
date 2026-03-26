@@ -135,59 +135,59 @@ def preprocess(data: Dict[str, Any], config: Config) -> PreprocessResult:
 
     frontend_policy_strict = bool(getattr(config, "frontend_policy_strict", False))
     forbid_ml_production = bool(getattr(config, "forbid_ml_production", False))
-    forbid_family_alpha_on_b3 = bool(getattr(config, "forbid_family_alpha_on_b3", False))
-    forbid_family_beta_on_b4 = bool(getattr(config, "forbid_family_beta_on_b4", False))
+    forbid_leaf_on_b3 = bool(getattr(config, "forbid_leaf_on_b3", False))
+    forbid_coolpis_on_b4 = bool(getattr(config, "forbid_coolpis_on_b4", False))
     forbidden_line_ids = {
         token.strip()
         for token in str(getattr(config, "forbidden_line_ids_csv", "") or "").split(",")
         if token.strip()
     }
-    family_alpha_allowed_lines = {
+    leaf_allowed_lines = {
         token.strip()
-        for token in str(getattr(config, "family_alpha_allowed_lines_csv", "") or "").split(",")
+        for token in str(getattr(config, "leaf_allowed_lines_csv", "") or "").split(",")
         if token.strip()
     }
-    family_beta_allowed_lines = {
+    coolpis_allowed_lines = {
         token.strip()
-        for token in str(getattr(config, "family_beta_allowed_lines_csv", "") or "").split(",")
+        for token in str(getattr(config, "coolpis_allowed_lines_csv", "") or "").split(",")
         if token.strip()
     }
-    series_gamma_allowed_lines = {
+    sprint_allowed_lines = {
         token.strip()
-        for token in str(getattr(config, "series_gamma_allowed_lines_csv", "") or "").split(",")
+        for token in str(getattr(config, "sprint_allowed_lines_csv", "") or "").split(",")
         if token.strip()
     }
-    family_beta_peach_allowed_lines = {
+    coolpis_peach_allowed_lines = {
         token.strip()
-        for token in str(getattr(config, "family_beta_peach_allowed_lines_csv", "") or "").split(",")
+        for token in str(getattr(config, "coolpis_peach_allowed_lines_csv", "") or "").split(",")
         if token.strip()
     }
-    sku_alpha_640_allowed_lines = {
+    yeopsaeju_640_allowed_lines = {
         token.strip()
-        for token in str(getattr(config, "sku_alpha_640_allowed_lines_csv", "") or "").split(",")
+        for token in str(getattr(config, "yeopsaeju_640_allowed_lines_csv", "") or "").split(",")
         if token.strip()
     }
-    sku_alpha_200_allowed_lines = {
+    yeopsaeju_200_allowed_lines = {
         token.strip()
-        for token in str(getattr(config, "sku_alpha_200_allowed_lines_csv", "") or "").split(",")
+        for token in str(getattr(config, "yeopsaeju_200_allowed_lines_csv", "") or "").split(",")
         if token.strip()
     }
-    sku_delta_allowed_lines = {
+    maesilwon_allowed_lines = {
         token.strip()
-        for token in str(getattr(config, "sku_delta_allowed_lines_csv", "") or "").split(",")
+        for token in str(getattr(config, "maesilwon_allowed_lines_csv", "") or "").split(",")
         if token.strip()
     }
-    sku_epsilon18000_allowed_lines = {
+    maehyang18000_allowed_lines = {
         token.strip()
-        for token in str(getattr(config, "sku_epsilon18000_allowed_lines_csv", "") or "").split(",")
+        for token in str(getattr(config, "maehyang18000_allowed_lines_csv", "") or "").split(",")
         if token.strip()
     }
-    brand_zeta_zero_allowed_lines = {
+    welchzero_allowed_lines = {
         token.strip()
-        for token in str(getattr(config, "brand_zeta_zero_allowed_lines_csv", "") or "").split(",")
+        for token in str(getattr(config, "welchzero_allowed_lines_csv", "") or "").split(",")
         if token.strip()
     }
-    reserve_b3_can_for_family_beta = bool(getattr(config, "reserve_b3_can_for_family_beta", False))
+    reserve_b3_can_for_coolpis = bool(getattr(config, "reserve_b3_can_for_coolpis", False))
 
     def _product_name_blob(meta: Dict[str, Any]) -> str:
         # Family policy must prefer SSOT product name.
@@ -199,46 +199,46 @@ def preprocess(data: Dict[str, Any], config: Config) -> PreprocessResult:
             return " ".join([name_ko, name_en]).strip()
         return " ".join([name_en, erp_name]).strip()
 
-    def _is_family_alpha_family(meta: Dict[str, Any]) -> bool:
-        return "FAMILY_ALPHA" in _product_name_blob(meta)
+    def _is_leaf_family(meta: Dict[str, Any]) -> bool:
+        return "잎새" in _product_name_blob(meta)
 
-    def _is_family_beta_family(meta: Dict[str, Any]) -> bool:
+    def _is_coolpis_family(meta: Dict[str, Any]) -> bool:
         blob = _product_name_blob(meta)
-        return ("FAMILY_BETA" in blob) or ("FAMILY_BETA" in blob.upper())
+        return ("쿨피스" in blob) or ("COOLPIS" in blob.upper())
 
-    def _is_series_gamma_family(meta: Dict[str, Any]) -> bool:
-        return "SERIES_GAMMA" in _product_name_blob(meta)
+    def _is_sprint_family(meta: Dict[str, Any]) -> bool:
+        return "스프린트" in _product_name_blob(meta)
 
-    def _is_family_beta_peach(meta: Dict[str, Any]) -> bool:
-        blob = _product_name_blob(meta)
-        up = blob.upper()
-        return (("FAMILY_BETA" in blob) or ("FAMILY_BETA" in up)) and ("PEACH" in blob or "PEACH" in up)
-
-    def _is_sku_alpha_16_640(meta: Dict[str, Any]) -> bool:
-        blob = _product_name_blob(meta)
-        return ("SKU_ALPHA" in blob) and ("16%" in blob) and ("640" in blob)
-
-    def _is_sku_alpha_16_200(meta: Dict[str, Any]) -> bool:
-        blob = _product_name_blob(meta)
-        return ("SKU_ALPHA" in blob) and ("16%" in blob) and ("200" in blob)
-
-    def _is_sku_delta(meta: Dict[str, Any]) -> bool:
-        return "SKU_DELTA" in _product_name_blob(meta)
-
-    def _is_sku_epsilon_18000(meta: Dict[str, Any]) -> bool:
-        blob = _product_name_blob(meta)
-        return ("SKU_EPSILON" in blob) and ("18000" in blob or "18,000" in blob)
-
-    def _is_brand_zeta_zero(meta: Dict[str, Any]) -> bool:
+    def _is_coolpis_peach(meta: Dict[str, Any]) -> bool:
         blob = _product_name_blob(meta)
         up = blob.upper()
-        return ("BRAND_ZETA" in blob or "BRAND_ZETA" in up) and ("ZERO" in blob or "ZERO" in up)
+        return (("쿨피스" in blob) or ("COOLPIS" in up)) and ("복숭아" in blob or "PEACH" in up)
+
+    def _is_yeopsaeju_16_640(meta: Dict[str, Any]) -> bool:
+        blob = _product_name_blob(meta)
+        return ("잎새주" in blob) and ("16%" in blob) and ("640" in blob)
+
+    def _is_yeopsaeju_16_200(meta: Dict[str, Any]) -> bool:
+        blob = _product_name_blob(meta)
+        return ("잎새주" in blob) and ("16%" in blob) and ("200" in blob)
+
+    def _is_maesilwon(meta: Dict[str, Any]) -> bool:
+        return "매실원" in _product_name_blob(meta)
+
+    def _is_maehyang_18000(meta: Dict[str, Any]) -> bool:
+        blob = _product_name_blob(meta)
+        return ("매향" in blob) and ("18000" in blob or "18,000" in blob)
+
+    def _is_welchzero(meta: Dict[str, Any]) -> bool:
+        blob = _product_name_blob(meta)
+        up = blob.upper()
+        return ("웰치" in blob or "WELCH" in up) and ("제로" in blob or "ZERO" in up)
 
     def _is_b3_line(line_id: str) -> bool:
-        return s(line_id).upper().startswith("LINE_A_B3_")
+        return s(line_id).upper().startswith("LINE_JSNG_B3_")
 
     def _is_b4_line(line_id: str) -> bool:
-        return s(line_id).upper().startswith("LINE_A_B4_")
+        return s(line_id).upper().startswith("LINE_JSNG_B4_")
 
     def _is_multi_line(line_id: str) -> bool:
         lid = s(line_id).upper()
@@ -272,15 +272,15 @@ def preprocess(data: Dict[str, Any], config: Config) -> PreprocessResult:
         dem_id = d.demand_id
         pid = d.product_id
         pmeta = product_info.get(pid) or {}
-        is_family_alpha_family = _is_family_alpha_family(pmeta)
-        is_family_beta_family = _is_family_beta_family(pmeta)
-        is_series_gamma_family = _is_series_gamma_family(pmeta)
-        is_family_beta_peach = _is_family_beta_peach(pmeta)
-        is_sku_alpha_16_640 = _is_sku_alpha_16_640(pmeta)
-        is_sku_alpha_16_200 = _is_sku_alpha_16_200(pmeta)
-        is_sku_delta = _is_sku_delta(pmeta)
-        is_sku_epsilon_18000 = _is_sku_epsilon_18000(pmeta)
-        is_brand_zeta_zero = _is_brand_zeta_zero(pmeta)
+        is_leaf_family = _is_leaf_family(pmeta)
+        is_coolpis_family = _is_coolpis_family(pmeta)
+        is_sprint_family = _is_sprint_family(pmeta)
+        is_coolpis_peach = _is_coolpis_peach(pmeta)
+        is_yeopsaeju_16_640 = _is_yeopsaeju_16_640(pmeta)
+        is_yeopsaeju_16_200 = _is_yeopsaeju_16_200(pmeta)
+        is_maesilwon = _is_maesilwon(pmeta)
+        is_maehyang_18000 = _is_maehyang_18000(pmeta)
+        is_welchzero = _is_welchzero(pmeta)
         candidate_lines = [d.requested_line_id] if d.requested_line_id else list(all_lines)
 
         ok_lines: List[str] = []
@@ -292,115 +292,115 @@ def preprocess(data: Dict[str, Any], config: Config) -> PreprocessResult:
                 if forbid_ml_production and _is_multi_line(ln):
                     trace(dem_id, ln, "POLICY", False, "POLICY_FORBID_ML_PRODUCTION", "LINE_MASTER")
                     continue
-            if frontend_policy_strict or forbid_family_alpha_on_b3:
-                if forbid_family_alpha_on_b3 and is_family_alpha_family and _is_b3_line(ln):
-                    trace(dem_id, ln, "POLICY", False, "POLICY_FORBID_FAMILY_ALPHA_ON_B3", "LINE_PRODUCT_POLICY")
+            if frontend_policy_strict or forbid_leaf_on_b3:
+                if forbid_leaf_on_b3 and is_leaf_family and _is_b3_line(ln):
+                    trace(dem_id, ln, "POLICY", False, "POLICY_FORBID_LEAF_ON_B3", "LINE_PRODUCT_POLICY")
                     continue
-            if frontend_policy_strict or forbid_family_beta_on_b4:
-                if forbid_family_beta_on_b4 and is_family_beta_family and _is_b4_line(ln):
-                    trace(dem_id, ln, "POLICY", False, "POLICY_FORBID_FAMILY_BETA_ON_B4", "LINE_PRODUCT_POLICY")
+            if frontend_policy_strict or forbid_coolpis_on_b4:
+                if forbid_coolpis_on_b4 and is_coolpis_family and _is_b4_line(ln):
+                    trace(dem_id, ln, "POLICY", False, "POLICY_FORBID_COOLPIS_ON_B4", "LINE_PRODUCT_POLICY")
                     continue
-            if reserve_b3_can_for_family_beta:
-                if (not is_family_beta_family) and s(ln).upper() == "LINE_A_B3_01":
-                    trace(dem_id, ln, "POLICY", False, "POLICY_RESERVE_B3_CAN_FOR_FAMILY_BETA", "LINE_PRODUCT_POLICY")
+            if reserve_b3_can_for_coolpis:
+                if (not is_coolpis_family) and s(ln).upper() == "LINE_JSNG_B3_01":
+                    trace(dem_id, ln, "POLICY", False, "POLICY_RESERVE_B3_CAN_FOR_COOLPIS", "LINE_PRODUCT_POLICY")
                     continue
-            if is_family_alpha_family and family_alpha_allowed_lines:
-                if ln not in family_alpha_allowed_lines:
+            if is_leaf_family and leaf_allowed_lines:
+                if ln not in leaf_allowed_lines:
                     trace(
                         dem_id,
                         ln,
                         "POLICY",
                         False,
-                        "POLICY_FAMILY_ALPHA_NOT_IN_ALLOWED_SET",
-                        "CONFIG:family_alpha_allowed_lines_csv",
+                        "POLICY_LEAF_NOT_IN_ALLOWED_SET",
+                        "CONFIG:leaf_allowed_lines_csv",
                     )
                     continue
-            if is_family_beta_family and family_beta_allowed_lines:
-                if ln not in family_beta_allowed_lines:
+            if is_coolpis_family and coolpis_allowed_lines:
+                if ln not in coolpis_allowed_lines:
                     trace(
                         dem_id,
                         ln,
                         "POLICY",
                         False,
-                        "POLICY_FAMILY_BETA_NOT_IN_ALLOWED_SET",
-                        "CONFIG:family_beta_allowed_lines_csv",
+                        "POLICY_COOLPIS_NOT_IN_ALLOWED_SET",
+                        "CONFIG:coolpis_allowed_lines_csv",
                     )
                     continue
-            if is_series_gamma_family and series_gamma_allowed_lines:
-                if ln not in series_gamma_allowed_lines:
+            if is_sprint_family and sprint_allowed_lines:
+                if ln not in sprint_allowed_lines:
                     trace(
                         dem_id,
                         ln,
                         "POLICY",
                         False,
-                        "POLICY_SERIES_GAMMA_NOT_IN_ALLOWED_SET",
-                        "CONFIG:series_gamma_allowed_lines_csv",
+                        "POLICY_SPRINT_NOT_IN_ALLOWED_SET",
+                        "CONFIG:sprint_allowed_lines_csv",
                     )
                     continue
-            if is_family_beta_peach and family_beta_peach_allowed_lines:
-                if ln not in family_beta_peach_allowed_lines:
+            if is_coolpis_peach and coolpis_peach_allowed_lines:
+                if ln not in coolpis_peach_allowed_lines:
                     trace(
                         dem_id,
                         ln,
                         "POLICY",
                         False,
-                        "POLICY_FAMILY_BETA_PEACH_NOT_IN_ALLOWED_SET",
-                        "CONFIG:family_beta_peach_allowed_lines_csv",
+                        "POLICY_COOLPIS_PEACH_NOT_IN_ALLOWED_SET",
+                        "CONFIG:coolpis_peach_allowed_lines_csv",
                     )
                     continue
-            if is_sku_alpha_16_640 and sku_alpha_640_allowed_lines:
-                if ln not in sku_alpha_640_allowed_lines:
+            if is_yeopsaeju_16_640 and yeopsaeju_640_allowed_lines:
+                if ln not in yeopsaeju_640_allowed_lines:
                     trace(
                         dem_id,
                         ln,
                         "POLICY",
                         False,
-                        "POLICY_SKU_ALPHA_640_NOT_IN_ALLOWED_SET",
-                        "CONFIG:sku_alpha_640_allowed_lines_csv",
+                        "POLICY_YEOPSAEJU_640_NOT_IN_ALLOWED_SET",
+                        "CONFIG:yeopsaeju_640_allowed_lines_csv",
                     )
                     continue
-            if is_sku_alpha_16_200 and sku_alpha_200_allowed_lines:
-                if ln not in sku_alpha_200_allowed_lines:
+            if is_yeopsaeju_16_200 and yeopsaeju_200_allowed_lines:
+                if ln not in yeopsaeju_200_allowed_lines:
                     trace(
                         dem_id,
                         ln,
                         "POLICY",
                         False,
-                        "POLICY_SKU_ALPHA_200_NOT_IN_ALLOWED_SET",
-                        "CONFIG:sku_alpha_200_allowed_lines_csv",
+                        "POLICY_YEOPSAEJU_200_NOT_IN_ALLOWED_SET",
+                        "CONFIG:yeopsaeju_200_allowed_lines_csv",
                     )
                     continue
-            if is_sku_delta and sku_delta_allowed_lines:
-                if ln not in sku_delta_allowed_lines:
+            if is_maesilwon and maesilwon_allowed_lines:
+                if ln not in maesilwon_allowed_lines:
                     trace(
                         dem_id,
                         ln,
                         "POLICY",
                         False,
-                        "POLICY_SKU_DELTA_NOT_IN_ALLOWED_SET",
-                        "CONFIG:sku_delta_allowed_lines_csv",
+                        "POLICY_MAESILWON_NOT_IN_ALLOWED_SET",
+                        "CONFIG:maesilwon_allowed_lines_csv",
                     )
                     continue
-            if is_sku_epsilon_18000 and sku_epsilon18000_allowed_lines:
-                if ln not in sku_epsilon18000_allowed_lines:
+            if is_maehyang_18000 and maehyang18000_allowed_lines:
+                if ln not in maehyang18000_allowed_lines:
                     trace(
                         dem_id,
                         ln,
                         "POLICY",
                         False,
-                        "POLICY_SKU_EPSILON18000_NOT_IN_ALLOWED_SET",
-                        "CONFIG:sku_epsilon18000_allowed_lines_csv",
+                        "POLICY_MAEHYANG18000_NOT_IN_ALLOWED_SET",
+                        "CONFIG:maehyang18000_allowed_lines_csv",
                     )
                     continue
-            if is_brand_zeta_zero and brand_zeta_zero_allowed_lines:
-                if ln not in brand_zeta_zero_allowed_lines:
+            if is_welchzero and welchzero_allowed_lines:
+                if ln not in welchzero_allowed_lines:
                     trace(
                         dem_id,
                         ln,
                         "POLICY",
                         False,
-                        "POLICY_BRAND_ZETA_ZERO_NOT_IN_ALLOWED_SET",
-                        "CONFIG:brand_zeta_zero_allowed_lines_csv",
+                        "POLICY_WELCHZERO_NOT_IN_ALLOWED_SET",
+                        "CONFIG:welchzero_allowed_lines_csv",
                     )
                     continue
 

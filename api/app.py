@@ -229,7 +229,7 @@ async def _app_lifespan(_app: FastAPI):
 
 
 def _init_sentry_if_configured() -> None:
-    dsn = (os.getenv("SENTRY_DSN") or os.getenv("PORTFOLIO_SENTRY_DSN") or "").strip()
+    dsn = (os.getenv("SENTRY_DSN") or os.getenv("BOHAE_SENTRY_DSN") or "").strip()
     if not dsn:
         return
     try:
@@ -237,7 +237,7 @@ def _init_sentry_if_configured() -> None:
         from sentry_sdk.integrations.fastapi import FastApiIntegration
     except Exception:
         return
-    traces_sample_rate_raw = (os.getenv("PORTFOLIO_SENTRY_TRACES_SAMPLE_RATE") or "0.1").strip()
+    traces_sample_rate_raw = (os.getenv("BOHAE_SENTRY_TRACES_SAMPLE_RATE") or "0.1").strip()
     try:
         traces_sample_rate = float(traces_sample_rate_raw or "0.1")
     except Exception:
@@ -246,7 +246,7 @@ def _init_sentry_if_configured() -> None:
         dsn=dsn,
         integrations=[FastApiIntegration()],
         traces_sample_rate=max(0.0, min(traces_sample_rate, 1.0)),
-        environment=(os.getenv("ENVIRONMENT") or os.getenv("PORTFOLIO_ENVIRONMENT") or os.getenv("NODE_ENV") or "development").strip(),
+        environment=(os.getenv("ENVIRONMENT") or os.getenv("BOHAE_ENVIRONMENT") or os.getenv("NODE_ENV") or "development").strip(),
     )
 
 
@@ -254,9 +254,9 @@ _init_sentry_if_configured()
 
 
 app = FastAPI(
-    title="Portfolio APS API",
+    title="Bohae APS API",
     version="0.1.0",
-    description="FastAPI wrapper for Portfolio APS solver (Phase 1 foundation).",
+    description="FastAPI wrapper for Bohae APS solver (Phase 1 foundation).",
     lifespan=_app_lifespan,
 )
 
@@ -275,44 +275,44 @@ KIOSK_LAYOUT_CAPACITY = {
     "grid_3x4": 12,
     "grid_4x3": 12,
 }
-KIOSK_PANEL_TIMEZONE = os.getenv("PORTFOLIO_KIOSK_PANEL_TIMEZONE", "Asia/Seoul").strip() or "Asia/Seoul"
-KIOSK_DEFAULT_COUNT_RESET_HHMM = os.getenv("PORTFOLIO_KIOSK_DEFAULT_COUNT_RESET_HHMM", "08:30").strip() or "08:30"
-KIOSK_PANEL_VERSION = os.getenv("PORTFOLIO_KIOSK_PANEL_VERSION", "2026-03-10-hardening-kickoff").strip() or "2026-03-10-hardening-kickoff"
+KIOSK_PANEL_TIMEZONE = os.getenv("BOHAE_KIOSK_PANEL_TIMEZONE", "Asia/Seoul").strip() or "Asia/Seoul"
+KIOSK_DEFAULT_COUNT_RESET_HHMM = os.getenv("BOHAE_KIOSK_DEFAULT_COUNT_RESET_HHMM", "08:30").strip() or "08:30"
+KIOSK_PANEL_VERSION = os.getenv("BOHAE_KIOSK_PANEL_VERSION", "2026-03-10-hardening-kickoff").strip() or "2026-03-10-hardening-kickoff"
 KIOSK_READ_TOKEN_HEADER = "X-Kiosk-Token"
-KIOSK_READ_SHARED_SECRET = os.getenv("PORTFOLIO_KIOSK_READ_TOKEN", "").strip()
+KIOSK_READ_SHARED_SECRET = os.getenv("BOHAE_KIOSK_READ_TOKEN", "").strip()
 KIOSK_ACTION_TOKEN_HEADER = "X-Kiosk-Action-Token"
-KIOSK_ACTION_SHARED_SECRET = os.getenv("PORTFOLIO_KIOSK_ACTION_TOKEN", "").strip()
+KIOSK_ACTION_SHARED_SECRET = os.getenv("BOHAE_KIOSK_ACTION_TOKEN", "").strip()
 KIOSK_PUBLIC_PANEL_ACCESS_POLICY = "PUBLIC_PANEL_SCOPED_READ_DEV_ONLY"
 _APP_STARTED_AT = time.time()
-BFF_BEARER_ISSUER = "portfolio-ops-bff"
-BFF_BEARER_AUDIENCE = "portfolio-aps-v20"
+BFF_BEARER_ISSUER = "bohae-ops-bff"
+BFF_BEARER_AUDIENCE = "bohae-aps-v20"
 BFF_BEARER_LEEWAY_SEC = 30
 
 _METRIC_PLAN_CHANGE_ARTIFACT_UPLOAD_TOTAL = Counter(
-    "portfolio_plan_change_artifact_upload_total",
+    "bohae_plan_change_artifact_upload_total",
     "Uploaded plan change artifacts",
     ["kind"],
 )
 _METRIC_PLAN_CHANGE_ARTIFACT_DOWNLOAD_TOTAL = Counter(
-    "portfolio_plan_change_artifact_download_total",
+    "bohae_plan_change_artifact_download_total",
     "Downloaded plan change artifacts",
     ["kind"],
 )
 _METRIC_PLAN_CHANGE_SIMULATION_TOTAL = Counter(
-    "portfolio_plan_change_simulation_total",
+    "bohae_plan_change_simulation_total",
     "Plan change simulations by terminal status",
     ["status", "preview_strategy"],
 )
-_METRIC_API_UPTIME_SECONDS = Gauge("portfolio_api_uptime_seconds", "Portfolio API process uptime in seconds")
-_METRIC_DB_CONNECTED = Gauge("portfolio_db_connected", "Whether backend DB connection is currently healthy")
+_METRIC_API_UPTIME_SECONDS = Gauge("bohae_api_uptime_seconds", "Bohae API process uptime in seconds")
+_METRIC_DB_CONNECTED = Gauge("bohae_db_connected", "Whether backend DB connection is currently healthy")
 _METRIC_PLAN_CHANGE_ARTIFACT_STORAGE_CONFIGURED = Gauge(
-    "portfolio_plan_change_artifact_storage_configured",
+    "bohae_plan_change_artifact_storage_configured",
     "Whether managed plan change artifact storage is configured",
 )
-_METRIC_AI_ENABLED = Gauge("portfolio_ai_enabled", "Whether AI insight generation is enabled")
-_METRIC_SENTRY_CONFIGURED = Gauge("portfolio_sentry_configured", "Whether Sentry DSN is configured")
+_METRIC_AI_ENABLED = Gauge("bohae_ai_enabled", "Whether AI insight generation is enabled")
+_METRIC_SENTRY_CONFIGURED = Gauge("bohae_sentry_configured", "Whether Sentry DSN is configured")
 _METRIC_SOLVER_WORKER_MODE = Gauge(
-    "portfolio_solver_worker_mode_info",
+    "bohae_solver_worker_mode_info",
     "Current solver worker mode",
     ["mode"],
 )
@@ -386,26 +386,26 @@ def _effective_role(role_codes: List[str]) -> str:
 
 _ALL_SYSTEM_USER_LINE_SCOPES = [
     "LINE_GLOBAL",
-    "LINE_A_B1_01",
-    "LINE_A_B1_02",
-    "LINE_A_B1_03",
-    "LINE_A_B1_05",
-    "LINE_A_B1_PET_A_1",
-    "LINE_A_B1_PET_A_2",
-    "LINE_A_B1_PET_B",
-    "LINE_A_B2_01",
-    "LINE_A_B3_01",
-    "LINE_A_B3_02",
-    "LINE_A_B4_01",
-    "LINE_A_ML_01",
-    "LINE_A_MANUAL_BL2_01",
-    "LINE_A_MANUAL_SH9_01",
+    "LINE_JSNG_B1_01",
+    "LINE_JSNG_B1_02",
+    "LINE_JSNG_B1_03",
+    "LINE_JSNG_B1_05",
+    "LINE_JSNG_B1_PET_A_1",
+    "LINE_JSNG_B1_PET_A_2",
+    "LINE_JSNG_B1_PET_B",
+    "LINE_JSNG_B2_01",
+    "LINE_JSNG_B3_01",
+    "LINE_JSNG_B3_02",
+    "LINE_JSNG_B4_01",
+    "LINE_JSNG_ML_01",
+    "LINE_JSNG_MANUAL_BL2_01",
+    "LINE_JSNG_MANUAL_SH9_01",
 ]
 _DEFAULT_SYSTEM_USER_LINE_SCOPES = [
     "LINE_GLOBAL",
-    "LINE_A_B1_01",
-    "LINE_A_B1_02",
-    "LINE_A_B1_03",
+    "LINE_JSNG_B1_01",
+    "LINE_JSNG_B1_02",
+    "LINE_JSNG_B1_03",
 ]
 
 
@@ -431,7 +431,7 @@ def _to_public_user_record(row: Dict[str, Any]) -> PublicUserRecord:
         employeeNo=employee_no,
         authSubject=auth_subject,
         role=normalized_role,
-        plantScopes=["PLANT_A"],
+        plantScopes=["PLANT_JSNG"],
         lineScopes=_line_scopes_for_public_role(normalized_role),
         isActive=bool(row.get("is_active", True)),
         createdAt=_trim_profile_text(row.get("created_at")) or None,
@@ -515,7 +515,7 @@ def _master_relation_exists(registry: RunRegistry, schema_name: str, relation: s
 
 
 def _resolve_latest_master_schema(registry: RunRegistry) -> str | None:
-    forced = str(os.getenv("PORTFOLIO_MASTERS_SCHEMA") or "").strip()
+    forced = str(os.getenv("BOHAE_MASTERS_SCHEMA") or "").strip()
     if forced:
         return _assert_master_identifier(forced, label="schema name")
     if not registry.conn:
@@ -1613,7 +1613,7 @@ def _load_current_profile_payload(registry: RunRegistry, actor: Dict[str, Any]) 
             "authSource": _normalize_profile_auth_source(payload.get("auth_source") or actor.get("auth_source")),
             "authSubject": _trim_profile_text(payload.get("auth_subject") or actor.get("actor_auth_subject")) or None,
             "roleCode": role_code,
-            "plantScopes": _list_actor_scope_values(actor, "actor_plant_scopes", ["PLANT_A"]),
+            "plantScopes": _list_actor_scope_values(actor, "actor_plant_scopes", ["PLANT_JSNG"]),
             "lineScopes": _list_actor_scope_values(actor, "actor_line_scopes", _line_scopes_for_public_role(role_code)),
             "phone": _trim_profile_text(payload.get("phone")) or None,
             "birthDate": _trim_profile_text(payload.get("birth_date")) or None,
@@ -2592,7 +2592,7 @@ def _get_otp_secret() -> str:
     configured = _trim_profile_text(os.getenv("OPS_AUTH_OTP_SECRET") or os.getenv("OPS_AUTH_SECRET"))
     if configured:
         return configured
-    return "portfolio-ops-dev-secret-change-me"
+    return "bohae-ops-dev-secret-change-me"
 
 
 def _get_otp_ttl_sec() -> int:
@@ -2655,7 +2655,7 @@ def _get_bootstrap_admin_employee_no() -> str:
 
 
 def _build_synthetic_email(employee_no: str) -> str:
-    domain = _trim_profile_text(os.getenv("OPS_AUTH_SYNTHETIC_EMAIL_DOMAIN")) or "ops.example.local"
+    domain = _trim_profile_text(os.getenv("OPS_AUTH_SYNTHETIC_EMAIL_DOMAIN")) or "ops.bohae.local"
     return f"{employee_no}@{domain}"
 
 
@@ -3606,7 +3606,7 @@ def _load_public_user_record_by_employee_no(registry: RunRegistry, employee_no: 
     if not registry.app_user_enabled or not registry.app_user_role_enabled:
         raise HTTPException(
             status_code=503,
-            detail="app_user/app_user_role 테이블이 없습니다. portfolio_aps_v20/sql/20_app_ops_foundation_v1.sql과 69~71 auth foundation migration을 먼저 적용하세요.",
+            detail="app_user/app_user_role 테이블이 없습니다. bohae_aps_v20/sql/20_app_ops_foundation_v1.sql과 69~71 auth foundation migration을 먼저 적용하세요.",
         )
     normalized_employee_no = _trim_profile_text(employee_no).replace(" ", "")
     user = registry.fetch_app_user_by_identity(employee_no=normalized_employee_no)
@@ -3630,7 +3630,7 @@ def _load_public_user_record_from_app_user(registry: RunRegistry, user: Dict[str
     if not registry.app_user_enabled or not registry.app_user_role_enabled:
         raise HTTPException(
             status_code=503,
-            detail="app_user/app_user_role 테이블이 없습니다. portfolio_aps_v20/sql/20_app_ops_foundation_v1.sql과 69~71 auth foundation migration을 먼저 적용하세요.",
+            detail="app_user/app_user_role 테이블이 없습니다. bohae_aps_v20/sql/20_app_ops_foundation_v1.sql과 69~71 auth foundation migration을 먼저 적용하세요.",
         )
     user_id = _trim_profile_text(user.get("user_id"))
     employee_no = _trim_profile_text(user.get("employee_no"))
@@ -4844,7 +4844,7 @@ def _resolve_authenticated_actor(registry: RunRegistry, actor_claims: Dict[str, 
     if not registry.app_user_enabled or not registry.app_user_role_enabled:
         raise HTTPException(
             status_code=503,
-            detail="app_user/app_user_role 테이블이 없습니다. portfolio_aps_v20/sql/20_app_ops_foundation_v1.sql과 69~71 auth foundation migration을 먼저 적용하세요.",
+            detail="app_user/app_user_role 테이블이 없습니다. bohae_aps_v20/sql/20_app_ops_foundation_v1.sql과 69~71 auth foundation migration을 먼저 적용하세요.",
         )
     raw_sub = str(actor_claims.get("sub") or "").strip()
     user = registry.fetch_app_user_by_id(raw_sub) if raw_sub else None
@@ -4990,7 +4990,7 @@ def _require_object_graph_projection(registry: RunRegistry) -> None:
         return
     raise HTTPException(
         status_code=503,
-        detail="object graph projection 테이블이 없습니다. portfolio_aps_v20/sql/76_object_graph_projection_v1.sql을 먼저 적용하세요.",
+        detail="object graph projection 테이블이 없습니다. bohae_aps_v20/sql/76_object_graph_projection_v1.sql을 먼저 적용하세요.",
     )
 
 
@@ -5001,7 +5001,7 @@ def _require_authenticated_user(
     if not registry.app_user_enabled or not registry.app_user_role_enabled:
         raise HTTPException(
             status_code=503,
-            detail="app_user/app_user_role 테이블이 없습니다. portfolio_aps_v20/sql/20_app_ops_foundation_v1.sql을 먼저 적용하세요.",
+            detail="app_user/app_user_role 테이블이 없습니다. bohae_aps_v20/sql/20_app_ops_foundation_v1.sql을 먼저 적용하세요.",
     )
     return _resolve_authenticated_actor(registry, actor_claims)
 
@@ -5104,22 +5104,22 @@ def _ensure_command_kernel(
     if require_solver_run and not registry.enabled:
         raise HTTPException(
             status_code=503,
-            detail="solver_run 테이블이 없습니다. portfolio_aps_v20/sql/20_app_ops_foundation_v1.sql을 먼저 적용하세요.",
+            detail="solver_run 테이블이 없습니다. bohae_aps_v20/sql/20_app_ops_foundation_v1.sql을 먼저 적용하세요.",
         )
     if require_approval and not registry.approval_enabled:
         raise HTTPException(
             status_code=503,
-            detail="schedule_approval 테이블이 없습니다. portfolio_aps_v20/sql/20_app_ops_foundation_v1.sql을 먼저 적용하세요.",
+            detail="schedule_approval 테이블이 없습니다. bohae_aps_v20/sql/20_app_ops_foundation_v1.sql을 먼저 적용하세요.",
         )
     if require_idempotency and not registry.idempotency_enabled:
         raise HTTPException(
             status_code=503,
-            detail="idempotency_store 테이블이 없습니다. portfolio_aps_v20/sql/43_csg_hardening_v1.sql을 먼저 적용하세요.",
+            detail="idempotency_store 테이블이 없습니다. bohae_aps_v20/sql/43_csg_hardening_v1.sql을 먼저 적용하세요.",
         )
     if require_receipt and not registry.operation_receipt_enabled:
         raise HTTPException(
             status_code=503,
-            detail="operation_receipt 테이블이 없습니다. portfolio_aps_v20/sql/44_operation_kernel_v1.sql을 먼저 적용하세요.",
+            detail="operation_receipt 테이블이 없습니다. bohae_aps_v20/sql/44_operation_kernel_v1.sql을 먼저 적용하세요.",
         )
 
 
@@ -5140,7 +5140,7 @@ def _ensure_solver_worker_queue_contract(registry: RunRegistry, *, operation: st
         status_code=503,
         detail=(
             f"{operation}에 필요한 solver durable queue 컬럼이 없습니다. "
-            "portfolio_aps_v20/sql/20_app_ops_foundation_v1.sql을 다시 적용해 queued_at/lease/heartbeat/payload_json 계약을 맞추세요."
+            "bohae_aps_v20/sql/20_app_ops_foundation_v1.sql을 다시 적용해 queued_at/lease/heartbeat/payload_json 계약을 맞추세요."
         ),
     )
 
@@ -5287,7 +5287,7 @@ def _serialize_solver_overrides(overrides: Any) -> Dict[str, Any]:
 
 
 def _solver_worker_log_path(run_id: str) -> Path:
-    root = os.getenv("PORTFOLIO_SOLVER_WORKER_LOG_DIR", "").strip()
+    root = os.getenv("BOHAE_SOLVER_WORKER_LOG_DIR", "").strip()
     if root:
         base_dir = Path(root).expanduser().resolve()
     else:
@@ -5306,7 +5306,7 @@ def _solver_worker_timeout_at(
 
 
 def _solver_worker_launch_mode() -> str:
-    raw = (os.getenv("PORTFOLIO_SOLVER_WORKER_MODE") or "subprocess").strip().lower()
+    raw = (os.getenv("BOHAE_SOLVER_WORKER_MODE") or "subprocess").strip().lower()
     return raw if raw in {"subprocess", "service"} else "subprocess"
 
 
@@ -5317,7 +5317,7 @@ def _launch_solver_run_worker_or_fail(run_id: str) -> None:
     cmd = [
         sys.executable,
         "-m",
-        "portfolio_aps_v20.api.run_worker",
+        "bohae_aps_v20.api.run_worker",
         "--run-id",
         str(run_id),
     ]
@@ -5341,10 +5341,10 @@ def _launch_solver_run_worker_or_fail(run_id: str) -> None:
 
 
 def _resume_queued_solver_runs_on_startup() -> None:
-    enabled = os.getenv("PORTFOLIO_SOLVER_QUEUE_RECOVERY", "1").strip().lower()
+    enabled = os.getenv("BOHAE_SOLVER_QUEUE_RECOVERY", "1").strip().lower()
     if enabled in {"0", "false", "no", "off"}:
         return
-    limit_raw = os.getenv("PORTFOLIO_SOLVER_QUEUE_RECOVERY_LIMIT", "20").strip()
+    limit_raw = os.getenv("BOHAE_SOLVER_QUEUE_RECOVERY_LIMIT", "20").strip()
     try:
         limit = max(1, int(limit_raw or "20"))
     except ValueError:
@@ -5367,7 +5367,7 @@ def _resume_queued_solver_runs_on_startup() -> None:
         try:
             _launch_solver_run_worker_or_fail(queued_run_id)
         except Exception as exc:
-            print(f"[portfolio_aps_api] queued run recovery failed for {queued_run_id}: {exc}")
+            print(f"[bohae_aps_api] queued run recovery failed for {queued_run_id}: {exc}")
 
 
 def _extract_error_message(detail: Any) -> str:
@@ -6230,8 +6230,8 @@ def _require_task_token_tables(registry: RunRegistry) -> None:
             status_code=503,
             detail=(
                 "task token governance tables are missing. "
-                "portfolio_aps_v20/sql/96_task_token_governance_v1.sql 및 "
-                "portfolio_aps_v20/sql/98_task_reward_sanction_governance_v1.sql을 먼저 적용하세요. "
+                "bohae_aps_v20/sql/96_task_token_governance_v1.sql 및 "
+                "bohae_aps_v20/sql/98_task_reward_sanction_governance_v1.sql을 먼저 적용하세요. "
                 f"(missing: {', '.join(missing)})"
             ),
         )
@@ -12408,7 +12408,7 @@ def _enrich_run_record_with_engine_meta(row: dict[str, Any]) -> dict[str, Any]:
 
     engine_name = str(trace.get("engine_name") or "").strip()
     if not engine_name:
-        engine_name = "portfolio_aps_v20"
+        engine_name = "bohae_aps_v20"
     engine_git_sha = str(trace.get("engine_git_sha") or "").strip() or str(out.get("git_commit") or "").strip()
     artifact_manifest_sha256 = str(trace.get("artifact_manifest_sha256") or "").strip()
     artifact_manifest_path = str(trace.get("artifact_manifest_path") or "").strip()
@@ -12846,7 +12846,7 @@ def _enforce_artifact_download_policy(
 
 
 def _cors_origins() -> List[str]:
-    raw = os.getenv("PORTFOLIO_CORS_ORIGINS", "")
+    raw = os.getenv("BOHAE_CORS_ORIGINS", "")
     if raw.strip():
         return [x.strip() for x in raw.split(",") if x.strip()]
     return [
@@ -12939,7 +12939,7 @@ def _normalize_kiosk_display_label(label: str, line_id: str) -> str:
         return "PET A"
     if "_PET_B" in upper_line_id:
         return "PET B"
-    if upper_line_id == "LINE_A_ML_01":
+    if upper_line_id == "LINE_JSNG_ML_01":
         return "후공정"
     if re.match(r"^LINE_[A-Z]+_MANUAL_[A-Z0-9]+(?:_\d+)?$", upper_line_id):
         return "수작업"
@@ -12948,28 +12948,28 @@ def _normalize_kiosk_display_label(label: str, line_id: str) -> str:
 
 def _resolve_kiosk_display_group_id(line_id: str) -> str:
     upper_line_id = _clean_text(line_id).upper()
-    if upper_line_id.startswith("LINE_A_B2_"):
-        return "LINE_A_B2_GROUP"
-    if upper_line_id.startswith("LINE_A_B3_"):
-        return "LINE_A_B3_GROUP"
-    if upper_line_id.startswith("LINE_A_B4_"):
-        return "LINE_A_B4_GROUP"
+    if upper_line_id.startswith("LINE_JSNG_B2_"):
+        return "LINE_JSNG_B2_GROUP"
+    if upper_line_id.startswith("LINE_JSNG_B3_"):
+        return "LINE_JSNG_B3_GROUP"
+    if upper_line_id.startswith("LINE_JSNG_B4_"):
+        return "LINE_JSNG_B4_GROUP"
     if "_ML_" in upper_line_id or "_MANUAL_" in upper_line_id:
-        return "LINE_A_MANUAL_GROUP"
+        return "LINE_JSNG_MANUAL_GROUP"
     if "_PET_A_" in upper_line_id:
-        return "LINE_A_B1_PET_A"
+        return "LINE_JSNG_B1_PET_A"
     return upper_line_id
 
 
 def _resolve_kiosk_display_group_label(display_group_id: str, base: "KioskLineViewRecord") -> str:
     group_key = _clean_text(display_group_id).upper()
-    if group_key == "LINE_A_B2_GROUP":
+    if group_key == "LINE_JSNG_B2_GROUP":
         return "제조 2동"
-    if group_key == "LINE_A_B3_GROUP":
+    if group_key == "LINE_JSNG_B3_GROUP":
         return "제조 3동"
-    if group_key == "LINE_A_B4_GROUP":
+    if group_key == "LINE_JSNG_B4_GROUP":
         return "제조 4동"
-    if group_key == "LINE_A_MANUAL_GROUP":
+    if group_key == "LINE_JSNG_MANUAL_GROUP":
         return "수작업/기타"
     return _clean_text(getattr(base, "display_line_label_ko", "")) or _clean_text(getattr(base, "line_label_ko", ""))
 
@@ -13009,7 +13009,7 @@ def _resolve_repo_relative_file(raw_value: str) -> Path | None:
 
 
 def _find_runtime_ssot_path() -> Path | None:
-    for env_name in ("APS_SSOT_PATH", "PORTFOLIO_SSOT_PATH"):
+    for env_name in ("APS_SSOT_PATH", "BOHAE_SSOT_PATH"):
         candidate = _resolve_repo_relative_file(os.getenv(env_name, ""))
         if candidate is not None:
             return candidate
@@ -13017,7 +13017,7 @@ def _find_runtime_ssot_path() -> Path | None:
 
 
 def _find_latest_ssot_path() -> Path | None:
-    candidate = _resolve_repo_relative_file(os.getenv("PORTFOLIO_DISPLAY_NAMES_SSOT_PATH", ""))
+    candidate = _resolve_repo_relative_file(os.getenv("BOHAE_DISPLAY_NAMES_SSOT_PATH", ""))
     if candidate is not None:
         return candidate
 
@@ -13031,7 +13031,7 @@ def _find_latest_ssot_path() -> Path | None:
         return None
 
     candidates = sorted(
-        ssot_dir.glob("portfolio_ontology*.xlsx"),
+        ssot_dir.glob("bohae_ontology*.xlsx"),
         key=lambda p: p.stat().st_mtime,
         reverse=True,
     )
@@ -13161,15 +13161,15 @@ def _build_display_names_response() -> DisplayNamesResponse:
     line_map = _apply_line_alias_display_names(line_map)
 
     plant_map: Dict[str, str] = {
-        "PLANT_A": "Plant A",
-        "PLANT_B": "Plant B",
+        "PLANT_A": "장성공장 A",
+        "PLANT_B": "장성공장 B",
     }
     plant_map.update(ssot_plants)
 
     return DisplayNamesResponse(
         lines=line_map,
         scenarios={
-            "BASELINE": "기본 계획",
+            "LIVE_BASE": "기본 계획",
             "RUSH_REPLAN": "긴급 재계획",
             "WHAT_IF": "가상 시뮬레이션",
         },
@@ -13529,7 +13529,7 @@ def _readyz_artifact_storage_payload() -> dict[str, Any]:
 
 def _readyz_worker_payload() -> dict[str, Any]:
     try:
-        poll_sec = int(os.getenv("PORTFOLIO_SOLVER_QUEUE_POLL_SEC") or 5)
+        poll_sec = int(os.getenv("BOHAE_SOLVER_QUEUE_POLL_SEC") or 5)
     except Exception:
         poll_sec = 5
     return {
@@ -13561,7 +13561,7 @@ def _readyz_ai_payload() -> dict[str, Any]:
 
 
 def _readyz_observability_payload() -> dict[str, Any]:
-    sentry_dsn = (os.getenv("SENTRY_DSN") or os.getenv("PORTFOLIO_SENTRY_DSN") or "").strip()
+    sentry_dsn = (os.getenv("SENTRY_DSN") or os.getenv("BOHAE_SENTRY_DSN") or "").strip()
     return {
         "sentry_configured": bool(sentry_dsn),
     }
@@ -14073,11 +14073,11 @@ def _ensure_plan_change_mutable(row: Dict[str, Any], *, operation: str) -> None:
 
 
 def _plan_change_gcs_bucket_name() -> str:
-    return (os.getenv("PORTFOLIO_PLAN_CHANGE_GCS_BUCKET") or "").strip()
+    return (os.getenv("BOHAE_PLAN_CHANGE_GCS_BUCKET") or "").strip()
 
 
 def _plan_change_gcs_prefix() -> str:
-    return (os.getenv("PORTFOLIO_PLAN_CHANGE_GCS_PREFIX") or "plan_changes").strip().strip("/")
+    return (os.getenv("BOHAE_PLAN_CHANGE_GCS_PREFIX") or "plan_changes").strip().strip("/")
 
 
 @lru_cache(maxsize=1)
@@ -14146,7 +14146,7 @@ def _read_plan_change_artifact_bytes(artifact: Dict[str, Any]) -> bytes:
 
 
 def _plan_change_store_root() -> Path:
-    raw = str(os.getenv("PORTFOLIO_PLAN_CHANGE_ARTIFACT_ROOT", "out/plan_changes")).strip() or "out/plan_changes"
+    raw = str(os.getenv("BOHAE_PLAN_CHANGE_ARTIFACT_ROOT", "out/plan_changes")).strip() or "out/plan_changes"
     return Path(raw)
 
 
@@ -14677,11 +14677,11 @@ def _parse_plan_change_overlay_rows(
 def _plan_change_preview_config() -> Config:
     base = Config()
     try:
-        preview_limit = int(os.getenv("PORTFOLIO_PLAN_CHANGE_PREVIEW_TIME_LIMIT_SEC", "20") or 20)
+        preview_limit = int(os.getenv("BOHAE_PLAN_CHANGE_PREVIEW_TIME_LIMIT_SEC", "20") or 20)
     except Exception:
         preview_limit = 20
     try:
-        preview_workers_cap = int(os.getenv("PORTFOLIO_PLAN_CHANGE_PREVIEW_MAX_WORKERS", "4") or 4)
+        preview_workers_cap = int(os.getenv("BOHAE_PLAN_CHANGE_PREVIEW_MAX_WORKERS", "4") or 4)
     except Exception:
         preview_workers_cap = 4
     return base.with_overrides(
@@ -15294,7 +15294,7 @@ def list_plan_changes(
         if not registry.plan_change_enabled:
             raise HTTPException(
                 status_code=503,
-                detail="plan_change 테이블이 없습니다. portfolio_aps_v20/sql/40_plan_change_v1.sql을 먼저 적용하세요.",
+                detail="plan_change 테이블이 없습니다. bohae_aps_v20/sql/40_plan_change_v1.sql을 먼저 적용하세요.",
             )
         actor = _require_plan_change_reader(registry, actor_claims)
         rows = registry.list_plan_changes(limit=limit, status=status)
@@ -15318,7 +15318,7 @@ def create_plan_change(
         if not registry.plan_change_enabled:
             raise HTTPException(
                 status_code=503,
-                detail="plan_change 테이블이 없습니다. portfolio_aps_v20/sql/40_plan_change_v1.sql을 먼저 적용하세요.",
+                detail="plan_change 테이블이 없습니다. bohae_aps_v20/sql/40_plan_change_v1.sql을 먼저 적용하세요.",
             )
         base_run_id = request.base_run_id.strip()
         change_type = request.change_type.strip()
@@ -15374,7 +15374,7 @@ def get_plan_change(
         if not registry.plan_change_enabled:
             raise HTTPException(
                 status_code=503,
-                detail="plan_change 테이블이 없습니다. portfolio_aps_v20/sql/40_plan_change_v1.sql을 먼저 적용하세요.",
+                detail="plan_change 테이블이 없습니다. bohae_aps_v20/sql/40_plan_change_v1.sql을 먼저 적용하세요.",
             )
         actor = _require_plan_change_reader(registry, actor_claims)
         row = registry.fetch_plan_change(change_id)
@@ -15401,7 +15401,7 @@ async def upload_plan_change_artifacts(
         if not registry.plan_change_enabled:
             raise HTTPException(
                 status_code=503,
-                detail="plan_change 테이블이 없습니다. portfolio_aps_v20/sql/40_plan_change_v1.sql을 먼저 적용하세요.",
+                detail="plan_change 테이블이 없습니다. bohae_aps_v20/sql/40_plan_change_v1.sql을 먼저 적용하세요.",
             )
         row = registry.fetch_plan_change(change_id)
         if row is None:
@@ -15434,7 +15434,7 @@ def download_plan_change_artifact(
         if not registry.plan_change_enabled:
             raise HTTPException(
                 status_code=503,
-                detail="plan_change 테이블이 없습니다. portfolio_aps_v20/sql/40_plan_change_v1.sql을 먼저 적용하세요.",
+                detail="plan_change 테이블이 없습니다. bohae_aps_v20/sql/40_plan_change_v1.sql을 먼저 적용하세요.",
             )
         actor = _require_plan_change_reader(registry, actor_claims)
         row = registry.fetch_plan_change(change_id)
@@ -15479,7 +15479,7 @@ def get_plan_change_issues(
         if not registry.plan_change_enabled:
             raise HTTPException(
                 status_code=503,
-                detail="plan_change 테이블이 없습니다. portfolio_aps_v20/sql/40_plan_change_v1.sql을 먼저 적용하세요.",
+                detail="plan_change 테이블이 없습니다. bohae_aps_v20/sql/40_plan_change_v1.sql을 먼저 적용하세요.",
             )
         actor = _require_plan_change_reader(registry, actor_claims)
         row = registry.fetch_plan_change(change_id)
@@ -15504,7 +15504,7 @@ def get_plan_change_result(
         if not registry.plan_change_enabled:
             raise HTTPException(
                 status_code=503,
-                detail="plan_change 테이블이 없습니다. portfolio_aps_v20/sql/40_plan_change_v1.sql을 먼저 적용하세요.",
+                detail="plan_change 테이블이 없습니다. bohae_aps_v20/sql/40_plan_change_v1.sql을 먼저 적용하세요.",
             )
         actor = _require_plan_change_reader(registry, actor_claims)
         row = registry.fetch_plan_change(change_id)
@@ -15538,7 +15538,7 @@ def simulate_plan_change(
         if not registry.plan_change_enabled:
             raise HTTPException(
                 status_code=503,
-                detail="plan_change 테이블이 없습니다. portfolio_aps_v20/sql/40_plan_change_v1.sql을 먼저 적용하세요.",
+                detail="plan_change 테이블이 없습니다. bohae_aps_v20/sql/40_plan_change_v1.sql을 먼저 적용하세요.",
             )
         row = registry.fetch_plan_change(change_id)
         if row is None:
@@ -16148,7 +16148,7 @@ def get_solver_run(
         if not registry.enabled:
             raise HTTPException(
                 status_code=503,
-                detail="Run registry table is not available. Apply portfolio_aps_v20/sql/20_app_ops_foundation_v1.sql first.",
+                detail="Run registry table is not available. Apply bohae_aps_v20/sql/20_app_ops_foundation_v1.sql first.",
             )
         row = registry.fetch_run(run_id)
         if row is None:
@@ -16172,7 +16172,7 @@ def list_solver_runs(
         if not registry.enabled:
             raise HTTPException(
                 status_code=503,
-                detail="Run registry table is not available. Apply portfolio_aps_v20/sql/20_app_ops_foundation_v1.sql first.",
+                detail="Run registry table is not available. Apply bohae_aps_v20/sql/20_app_ops_foundation_v1.sql first.",
             )
         rows = registry.list_runs(limit=limit)
         return [SolverRunRecord(**_enrich_run_record_with_engine_meta(row)) for row in rows]
@@ -16261,7 +16261,7 @@ def get_dashboard(
         if countUnscheduled > 0:
             avgUnscheduled = round(sumUnscheduled / countUnscheduled, 2)
             
-        from portfolio_aps_v20.api.schemas import DashboardSummary, DashboardResponse
+        from bohae_aps_v20.api.schemas import DashboardSummary, DashboardResponse
         summary = DashboardSummary(
             totalRuns=totalRuns,
             runningRuns=runningRuns,
@@ -18493,7 +18493,7 @@ def _build_local_erp_sync_status(registry: RunRegistry) -> Dict[str, Any]:
         if str(row.get("warehouse_id") or "").strip() and str(row.get("location_id") or "").strip()
     })
     source = "LOCAL_MASTER_DB"
-    if os.getenv("PORTFOLIO_UNI_ERP_BASE_URL") or os.getenv("UNI_ERP_BASE_URL") or os.getenv("PORTFOLIO_ERP_BASE_URL"):
+    if os.getenv("BOHAE_UNI_ERP_BASE_URL") or os.getenv("UNI_ERP_BASE_URL") or os.getenv("BOHAE_ERP_BASE_URL"):
         source = "UNI_API"
     state = "OK" if source == "UNI_API" else "STALE"
     message = "UNI ERP 마스터 동기화 준비됨" if source == "UNI_API" else "UNI ERP URL 미설정, 로컬 마스터 기반 동기화"
@@ -19449,7 +19449,7 @@ def list_approvals(
         if not registry.approval_enabled or not registry.enabled:
             raise HTTPException(
                 status_code=503,
-                detail="Approval tables are not available. Apply portfolio_aps_v20/sql/20_app_ops_foundation_v1.sql first.",
+                detail="Approval tables are not available. Apply bohae_aps_v20/sql/20_app_ops_foundation_v1.sql first.",
             )
         actor = _resolve_authenticated_actor(registry, actor_claims)
         rows = registry.list_approvals(limit=limit, approval_status=approval_status)
@@ -19792,7 +19792,7 @@ def execute_approved_solver_run(
 
             source_type = str(
                 execute_request.source
-                or os.getenv("PORTFOLIO_APPROVED_EXECUTE_SOURCE")
+                or os.getenv("BOHAE_APPROVED_EXECUTE_SOURCE")
                 or source_run.get("source_type")
                 or "db"
             ).strip().lower()
@@ -20019,7 +20019,7 @@ def list_decision_log(
         if not registry.decision_log_enabled:
             raise HTTPException(
                 status_code=503,
-                detail="decision_log 테이블이 없습니다. portfolio_aps_v20/sql/20_app_ops_foundation_v1.sql을 먼저 적용하세요.",
+                detail="decision_log 테이블이 없습니다. bohae_aps_v20/sql/20_app_ops_foundation_v1.sql을 먼저 적용하세요.",
             )
         actor = _resolve_authenticated_actor(registry, actor_claims)
         actor_role = str(actor.get("actor_role") or "").upper()
@@ -20049,7 +20049,7 @@ def get_operation_receipt(
         if not registry.operation_receipt_enabled:
             raise HTTPException(
                 status_code=503,
-                detail="operation_receipt 테이블이 없습니다. portfolio_aps_v20/sql/44_operation_kernel_v1.sql을 먼저 적용하세요.",
+                detail="operation_receipt 테이블이 없습니다. bohae_aps_v20/sql/44_operation_kernel_v1.sql을 먼저 적용하세요.",
             )
         actor = _resolve_authenticated_actor(registry, actor_claims)
         action_row = registry.fetch_action_receipt_v1(receipt_id)
@@ -20264,7 +20264,7 @@ def list_events(
         if not registry.decision_log_enabled:
             raise HTTPException(
                 status_code=503,
-                detail="decision_log 테이블이 없습니다. portfolio_aps_v20/sql/20_app_ops_foundation_v1.sql을 먼저 적용하세요.",
+                detail="decision_log 테이블이 없습니다. bohae_aps_v20/sql/20_app_ops_foundation_v1.sql을 먼저 적용하세요.",
             )
         if run_id and run_id.strip():
             rows = registry.list_decision_log(limit=limit, run_id=run_id.strip())
@@ -20299,7 +20299,7 @@ def list_task_inbox(
         if not registry.task_inbox_enabled:
             raise HTTPException(
                 status_code=503,
-                detail="task_inbox 테이블이 없습니다. portfolio_aps_v20/sql/44_operation_kernel_v1.sql을 먼저 적용하세요.",
+                detail="task_inbox 테이블이 없습니다. bohae_aps_v20/sql/44_operation_kernel_v1.sql을 먼저 적용하세요.",
             )
         actor = _require_authenticated_user(registry, actor_claims)
         role = str(actor.get("actor_role") or "VIEWER").upper()
@@ -20514,7 +20514,7 @@ def get_task_detail(
         if not registry.task_inbox_enabled:
             raise HTTPException(
                 status_code=503,
-                detail="task_inbox 테이블이 없습니다. portfolio_aps_v20/sql/44_operation_kernel_v1.sql을 먼저 적용하세요.",
+                detail="task_inbox 테이블이 없습니다. bohae_aps_v20/sql/44_operation_kernel_v1.sql을 먼저 적용하세요.",
             )
         actor = _require_authenticated_user(registry, actor_claims)
         inbox_row = registry.fetch_task_inbox(task_id)
@@ -20604,7 +20604,7 @@ def complete_task_inbox(
         if not registry.task_inbox_enabled:
             raise HTTPException(
                 status_code=503,
-                detail="task_inbox 테이블이 없습니다. portfolio_aps_v20/sql/44_operation_kernel_v1.sql을 먼저 적용하세요.",
+                detail="task_inbox 테이블이 없습니다. bohae_aps_v20/sql/44_operation_kernel_v1.sql을 먼저 적용하세요.",
             )
         actor = _require_authenticated_user(registry, actor_claims)
         task_row = None
@@ -20779,7 +20779,7 @@ def get_task_attachment(
         if not registry.task_inbox_enabled:
             raise HTTPException(
                 status_code=503,
-                detail="task_inbox 테이블이 없습니다. portfolio_aps_v20/sql/44_operation_kernel_v1.sql을 먼저 적용하세요.",
+                detail="task_inbox 테이블이 없습니다. bohae_aps_v20/sql/44_operation_kernel_v1.sql을 먼저 적용하세요.",
             )
         actor = _require_authenticated_user(registry, actor_claims)
         row = registry.fetch_task_inbox(task_id)
@@ -21016,7 +21016,7 @@ def list_feedback_reviews(
         if not registry.feedback_review_enabled:
             raise HTTPException(
                 status_code=503,
-                detail="feedback_review 테이블이 없습니다. portfolio_aps_v20/sql/74_audit_feedback_platform_v1.sql을 먼저 적용하세요.",
+                detail="feedback_review 테이블이 없습니다. bohae_aps_v20/sql/74_audit_feedback_platform_v1.sql을 먼저 적용하세요.",
             )
         actor = _require_authenticated_user(registry, actor_claims)
         rows = registry.list_feedback_reviews(status=status, run_id=run_id, line_id=line_id, limit=200)
@@ -21041,7 +21041,7 @@ def get_feedback_leaderboard(
         if not registry.feedback_review_enabled:
             raise HTTPException(
                 status_code=503,
-                detail="feedback_review 테이블이 없습니다. portfolio_aps_v20/sql/74_audit_feedback_platform_v1.sql을 먼저 적용하세요.",
+                detail="feedback_review 테이블이 없습니다. bohae_aps_v20/sql/74_audit_feedback_platform_v1.sql을 먼저 적용하세요.",
             )
         actor = _require_authenticated_user(registry, actor_claims)
         rows = registry.list_feedback_leaderboard_rows(limit=100)
@@ -21541,7 +21541,7 @@ def dispatch_action(
             if not registry.plan_change_enabled:
                 raise HTTPException(
                     status_code=503,
-                    detail="plan_change 테이블이 없습니다. portfolio_aps_v20/sql/40_plan_change_v1.sql을 먼저 적용하세요.",
+                    detail="plan_change 테이블이 없습니다. bohae_aps_v20/sql/40_plan_change_v1.sql을 먼저 적용하세요.",
                 )
             actor = _require_manager_or_admin(registry, actor_claims)
 
@@ -21708,7 +21708,7 @@ def dispatch_action(
             if not registry.lims_ccp_limit_enabled or not registry.lims_ccp_monitoring_enabled:
                 raise HTTPException(
                     status_code=503,
-                    detail="LIMS CCP 테이블이 없습니다. portfolio_aps_v20/sql/50_lims_ccp_foundation_v1.sql을 먼저 적용하세요.",
+                    detail="LIMS CCP 테이블이 없습니다. bohae_aps_v20/sql/50_lims_ccp_foundation_v1.sql을 먼저 적용하세요.",
                 )
             actor = _require_authenticated_user(registry, actor_claims)
 
@@ -21885,7 +21885,7 @@ def dispatch_action(
             if not registry.lims_ccp_limit_enabled:
                 raise HTTPException(
                     status_code=503,
-                    detail="LIMS CCP limit 테이블이 없습니다. portfolio_aps_v20/sql/50_lims_ccp_foundation_v1.sql을 먼저 적용하세요.",
+                    detail="LIMS CCP limit 테이블이 없습니다. bohae_aps_v20/sql/50_lims_ccp_foundation_v1.sql을 먼저 적용하세요.",
                 )
             actor = _require_authenticated_user(registry, actor_claims)
 
@@ -21997,7 +21997,7 @@ def dispatch_action(
             if not registry.lims_oos_case_enabled:
                 raise HTTPException(
                     status_code=503,
-                    detail="LIMS OOS 테이블이 없습니다. portfolio_aps_v20/sql/50_lims_ccp_foundation_v1.sql을 먼저 적용하세요.",
+                    detail="LIMS OOS 테이블이 없습니다. bohae_aps_v20/sql/50_lims_ccp_foundation_v1.sql을 먼저 적용하세요.",
                 )
             actor = _require_manager_or_admin(registry, actor_claims)
 
@@ -22189,7 +22189,7 @@ def decision_log_summary(
         if not registry.decision_log_enabled:
             raise HTTPException(
                 status_code=503,
-                detail="decision_log 테이블이 없습니다. portfolio_aps_v20/sql/20_app_ops_foundation_v1.sql을 먼저 적용하세요.",
+                detail="decision_log 테이블이 없습니다. bohae_aps_v20/sql/20_app_ops_foundation_v1.sql을 먼저 적용하세요.",
             )
         cur = registry.conn.cursor()
         try:
@@ -22266,7 +22266,7 @@ def get_run_renderpack(
         if not registry.enabled:
             raise HTTPException(
                 status_code=503,
-                detail="solver_run 테이블이 없습니다. portfolio_aps_v20/sql/20_app_ops_foundation_v1.sql을 먼저 적용하세요.",
+                detail="solver_run 테이블이 없습니다. bohae_aps_v20/sql/20_app_ops_foundation_v1.sql을 먼저 적용하세요.",
             )
         run_row = registry.fetch_run(run_id)
         if run_row is None:
@@ -22309,7 +22309,7 @@ def get_artifact_manifest(
         if not registry.enabled:
             raise HTTPException(
                 status_code=503,
-                detail="solver_run 테이블이 없습니다. portfolio_aps_v20/sql/20_app_ops_foundation_v1.sql을 먼저 적용하세요.",
+                detail="solver_run 테이블이 없습니다. bohae_aps_v20/sql/20_app_ops_foundation_v1.sql을 먼저 적용하세요.",
             )
         row = registry.fetch_run(run_id)
         if row is None:
@@ -22356,7 +22356,7 @@ def download_output_xlsx(
         if not registry.enabled:
             raise HTTPException(
                 status_code=503,
-                detail="solver_run 테이블이 없습니다. portfolio_aps_v20/sql/20_app_ops_foundation_v1.sql을 먼저 적용하세요.",
+                detail="solver_run 테이블이 없습니다. bohae_aps_v20/sql/20_app_ops_foundation_v1.sql을 먼저 적용하세요.",
             )
         row = registry.fetch_run(run_id)
         if row is None:
@@ -22402,7 +22402,7 @@ def get_kpi_cards(
         if not registry.kpi_cards_view_enabled:
             raise HTTPException(
                 status_code=503,
-                detail="KPI cards view is not available. Apply portfolio_aps_v20/sql/20_app_ops_foundation_v1.sql first.",
+                detail="KPI cards view is not available. Apply bohae_aps_v20/sql/20_app_ops_foundation_v1.sql first.",
             )
         row = registry.fetch_kpi_cards()
         if row is None:
@@ -22426,7 +22426,7 @@ def list_kpi_daily(
         if not registry.kpi_daily_view_enabled:
             raise HTTPException(
                 status_code=503,
-                detail="KPI daily view is not available. Apply portfolio_aps_v20/sql/20_app_ops_foundation_v1.sql first.",
+                detail="KPI daily view is not available. Apply bohae_aps_v20/sql/20_app_ops_foundation_v1.sql first.",
             )
         rows = registry.list_kpi_daily(limit=limit)
         return [KpiDailyRecord(**row) for row in rows]
@@ -22438,17 +22438,17 @@ def _ensure_sensor_backend_ready(registry: RunRegistry) -> None:
     if not registry.state_sensor_enabled:
         raise HTTPException(
             status_code=503,
-            detail="STATE_SENSOR 테이블이 없습니다. portfolio_aps_v20/sql/21_kiosk_state_sensor_v1.sql과 75_sensor_latest_device_v1.sql을 먼저 적용하세요.",
+            detail="STATE_SENSOR 테이블이 없습니다. bohae_aps_v20/sql/21_kiosk_state_sensor_v1.sql과 75_sensor_latest_device_v1.sql을 먼저 적용하세요.",
         )
     if not registry.sensor_event_enabled:
         raise HTTPException(
             status_code=503,
-            detail="telemetry.sensor_event 테이블이 없습니다. portfolio_aps_v20/sql/24_telemetry_sensor_event_v1.sql을 먼저 적용하세요.",
+            detail="telemetry.sensor_event 테이블이 없습니다. bohae_aps_v20/sql/24_telemetry_sensor_event_v1.sql을 먼저 적용하세요.",
         )
     if not registry.sensor_device_enabled:
         raise HTTPException(
             status_code=503,
-            detail="telemetry.sensor_device 테이블이 없습니다. portfolio_aps_v20/sql/75_sensor_latest_device_v1.sql을 먼저 적용하세요.",
+            detail="telemetry.sensor_device 테이블이 없습니다. bohae_aps_v20/sql/75_sensor_latest_device_v1.sql을 먼저 적용하세요.",
         )
 
 
@@ -22457,17 +22457,17 @@ def _ensure_kiosk_panel_backend_ready(registry: RunRegistry) -> None:
     if not registry.kiosk_line_config_enabled:
         raise HTTPException(
             status_code=503,
-            detail="kiosk_line_config 테이블이 없습니다. portfolio_aps_v20/sql/22_kiosk_control_plane_v1.sql을 먼저 적용하세요.",
+            detail="kiosk_line_config 테이블이 없습니다. bohae_aps_v20/sql/22_kiosk_control_plane_v1.sql을 먼저 적용하세요.",
         )
     if not registry.kiosk_device_assignment_enabled:
         raise HTTPException(
             status_code=503,
-            detail="kiosk_device_assignment 테이블이 없습니다. portfolio_aps_v20/sql/22_kiosk_control_plane_v1.sql을 먼저 적용하세요.",
+            detail="kiosk_device_assignment 테이블이 없습니다. bohae_aps_v20/sql/22_kiosk_control_plane_v1.sql을 먼저 적용하세요.",
         )
     if not registry.kiosk_notice_enabled:
         raise HTTPException(
             status_code=503,
-            detail="kiosk_notice 테이블이 없습니다. portfolio_aps_v20/sql/86_kiosk_notice_panel_authority_v1.sql을 먼저 적용하세요.",
+            detail="kiosk_notice 테이블이 없습니다. bohae_aps_v20/sql/86_kiosk_notice_panel_authority_v1.sql을 먼저 적용하세요.",
         )
 
 
@@ -22475,7 +22475,7 @@ def _ensure_kiosk_notice_backend_ready(registry: RunRegistry) -> None:
     if not registry.kiosk_notice_enabled:
         raise HTTPException(
             status_code=503,
-            detail="kiosk_notice 테이블이 없습니다. portfolio_aps_v20/sql/86_kiosk_notice_panel_authority_v1.sql을 먼저 적용하세요.",
+            detail="kiosk_notice 테이블이 없습니다. bohae_aps_v20/sql/86_kiosk_notice_panel_authority_v1.sql을 먼저 적용하세요.",
         )
 
 
@@ -22641,9 +22641,9 @@ def _apply_source_headers(response: Response, source_ts_ms: int) -> None:
     now_ms = _now_ms()
     source_ms = int(max(0, int(source_ts_ms or 0)))
     age_ms = int(max(0, now_ms - source_ms)) if source_ms > 0 else int(now_ms)
-    response.headers["x-portfolio-correlation-id"] = str(uuid.uuid4())
-    response.headers["x-portfolio-source-ts"] = str(source_ms)
-    response.headers["x-portfolio-age-ms"] = str(age_ms)
+    response.headers["x-bohae-correlation-id"] = str(uuid.uuid4())
+    response.headers["x-bohae-source-ts"] = str(source_ms)
+    response.headers["x-bohae-age-ms"] = str(age_ms)
 
 
 def _jsonb_to_obj(value: object) -> dict:
@@ -22756,7 +22756,7 @@ def _auto_sync_kiosk_config_from_approved_run(
         "warnings": [],
     }
     if source_event_label == "RUN_APPROVED":
-        if not _is_true_env("PORTFOLIO_KIOSK_AUTO_SYNC_ON_APPROVE", True):
+        if not _is_true_env("BOHAE_KIOSK_AUTO_SYNC_ON_APPROVE", True):
             if run_id:
                 _insert_kiosk_sync_skip_decision(
                     registry,
@@ -22767,13 +22767,13 @@ def _auto_sync_kiosk_config_from_approved_run(
                     details={
                         "run_id": run_id,
                         "source_event": source_event_label,
-                        "env_name": "PORTFOLIO_KIOSK_AUTO_SYNC_ON_APPROVE",
+                        "env_name": "BOHAE_KIOSK_AUTO_SYNC_ON_APPROVE",
                     },
                 )
             summary["warnings"].append("AUTO_SYNC_DISABLED")
             return summary
     else:
-        if not _is_true_env("PORTFOLIO_KIOSK_AUTO_SYNC_ON_EXECUTED", True):
+        if not _is_true_env("BOHAE_KIOSK_AUTO_SYNC_ON_EXECUTED", True):
             if run_id:
                 _insert_kiosk_sync_skip_decision(
                     registry,
@@ -22784,7 +22784,7 @@ def _auto_sync_kiosk_config_from_approved_run(
                     details={
                         "run_id": run_id,
                         "source_event": source_event_label,
-                        "env_name": "PORTFOLIO_KIOSK_AUTO_SYNC_ON_EXECUTED",
+                        "env_name": "BOHAE_KIOSK_AUTO_SYNC_ON_EXECUTED",
                     },
                 )
             summary["warnings"].append("AUTO_SYNC_DISABLED")
@@ -22802,9 +22802,9 @@ def _auto_sync_kiosk_config_from_approved_run(
         summary["warnings"].append("KIOSK_CONFIG_TABLE_NOT_AVAILABLE")
         return summary
 
-    configured_line_id = str(os.getenv("PORTFOLIO_KIOSK_APPROVAL_SYNC_LINE_ID") or "").strip()
-    fallback_line_id = str(os.getenv("PORTFOLIO_KIOSK_APPROVAL_FALLBACK_LINE_ID") or "").strip()
-    source_system = str(os.getenv("PORTFOLIO_KIOSK_APPROVAL_SYNC_SOURCE_SYSTEM") or "SOLVER").strip() or "SOLVER"
+    configured_line_id = str(os.getenv("BOHAE_KIOSK_APPROVAL_SYNC_LINE_ID") or "").strip()
+    fallback_line_id = str(os.getenv("BOHAE_KIOSK_APPROVAL_FALLBACK_LINE_ID") or "").strip()
+    source_system = str(os.getenv("BOHAE_KIOSK_APPROVAL_SYNC_SOURCE_SYSTEM") or "SOLVER").strip() or "SOLVER"
     if not run_id:
         summary["warnings"].append("RUN_ID_EMPTY")
         return summary
@@ -22896,7 +22896,7 @@ def _auto_sync_kiosk_config_from_approved_run(
         else ""
     )
 
-    strict_sync = _is_true_env("PORTFOLIO_KIOSK_APPROVAL_SYNC_STRICT", True)
+    strict_sync = _is_true_env("BOHAE_KIOSK_APPROVAL_SYNC_STRICT", True)
     if configured_line_id:
         configured_target = configured_line_resolved or configured_line_id
         filtered_entries = {
@@ -22992,14 +22992,14 @@ def _auto_sync_kiosk_config_from_approved_run(
             or str(cfg_before.get("product_name") or "").strip()
             or "제품A"
         )
-        unit_label = str(cfg_before.get("unit_label") or os.getenv("PORTFOLIO_KIOSK_DEFAULT_UNIT_LABEL") or "병").strip() or "병"
+        unit_label = str(cfg_before.get("unit_label") or os.getenv("BOHAE_KIOSK_DEFAULT_UNIT_LABEL") or "병").strip() or "병"
         target_qty = int(plan_metrics.get("target_qty") or 0)
         if target_qty <= 0:
             target_qty = int(cfg_before.get("target_qty") or 0)
         if target_qty <= 0 and telem is not None:
             target_qty = int(telem.get("target_qty") or 0)
         if target_qty <= 0:
-            target_qty = int(os.getenv("PORTFOLIO_KIOSK_DEFAULT_TARGET_QTY", "0") or 0)
+            target_qty = int(os.getenv("BOHAE_KIOSK_DEFAULT_TARGET_QTY", "0") or 0)
 
         bpm_target = int(plan_metrics.get("bpm_target") or 0)
         if bpm_target <= 0:
@@ -24663,7 +24663,7 @@ def _compose_kiosk_line_view_from_inputs(
     viewer_product_name_detail = product_name_detail if viewer_product_name else ""
     unit_label = _clean_text(cfg.get("unit_label")) if cfg else ""
     if not unit_label:
-        unit_label = str(os.getenv("PORTFOLIO_KIOSK_DEFAULT_UNIT_LABEL") or "병").strip() or "병"
+        unit_label = str(os.getenv("BOHAE_KIOSK_DEFAULT_UNIT_LABEL") or "병").strip() or "병"
 
     shift_counter_bundle = _resolve_kiosk_shift_counter_bundle(
         registry,
@@ -25620,7 +25620,7 @@ def post_kiosk_line_ack(
         if not registry.decision_log_enabled:
             raise HTTPException(
                 status_code=503,
-                detail="decision_log 테이블이 없습니다. portfolio_aps_v20/sql/20_app_ops_foundation_v1.sql을 먼저 적용하세요.",
+                detail="decision_log 테이블이 없습니다. bohae_aps_v20/sql/20_app_ops_foundation_v1.sql을 먼저 적용하세요.",
             )
         actor = _require_kiosk_action_actor(
             registry,
@@ -25663,7 +25663,7 @@ def post_kiosk_line_issue(
         if not registry.decision_log_enabled:
             raise HTTPException(
                 status_code=503,
-                detail="decision_log 테이블이 없습니다. portfolio_aps_v20/sql/20_app_ops_foundation_v1.sql을 먼저 적용하세요.",
+                detail="decision_log 테이블이 없습니다. bohae_aps_v20/sql/20_app_ops_foundation_v1.sql을 먼저 적용하세요.",
             )
         actor = _require_kiosk_action_actor(
             registry,
@@ -25714,7 +25714,7 @@ def get_kiosk_notices(
             if not registry.kiosk_device_assignment_enabled:
                 raise HTTPException(
                     status_code=503,
-                    detail="kiosk_device_assignment 테이블이 없습니다. portfolio_aps_v20/sql/22_kiosk_control_plane_v1.sql을 먼저 적용하세요.",
+                    detail="kiosk_device_assignment 테이블이 없습니다. bohae_aps_v20/sql/22_kiosk_control_plane_v1.sql을 먼저 적용하세요.",
                 )
             assignment = _resolve_published_kiosk_device_assignment(
                 registry,
@@ -26057,7 +26057,7 @@ def get_ops_kiosk_profile(
         if not registry.kiosk_view_profile_enabled:
             raise HTTPException(
                 status_code=503,
-                detail="kiosk_view_profile 테이블이 없습니다. portfolio_aps_v20/sql/94_kiosk_view_profile_v1.sql을 먼저 적용하세요.",
+                detail="kiosk_view_profile 테이블이 없습니다. bohae_aps_v20/sql/94_kiosk_view_profile_v1.sql을 먼저 적용하세요.",
             )
         row = registry.fetch_kiosk_view_profile(profile_id.strip())
         if row is None:
@@ -26086,7 +26086,7 @@ def upsert_ops_kiosk_profile(
         if not registry.kiosk_view_profile_enabled:
             raise HTTPException(
                 status_code=503,
-                detail="kiosk_view_profile 테이블이 없습니다. portfolio_aps_v20/sql/94_kiosk_view_profile_v1.sql을 먼저 적용하세요.",
+                detail="kiosk_view_profile 테이블이 없습니다. bohae_aps_v20/sql/94_kiosk_view_profile_v1.sql을 먼저 적용하세요.",
             )
         existing = registry.fetch_kiosk_view_profile(profile_id.strip())
         if existing and not _actor_can_edit_kiosk_profile(actor, existing):
@@ -26160,7 +26160,7 @@ def delete_ops_kiosk_profile(
         if not registry.kiosk_view_profile_enabled:
             raise HTTPException(
                 status_code=503,
-                detail="kiosk_view_profile 테이블이 없습니다. portfolio_aps_v20/sql/94_kiosk_view_profile_v1.sql을 먼저 적용하세요.",
+                detail="kiosk_view_profile 테이블이 없습니다. bohae_aps_v20/sql/94_kiosk_view_profile_v1.sql을 먼저 적용하세요.",
             )
         existing = registry.fetch_kiosk_view_profile(profile_id.strip())
         if existing is None:
@@ -26203,7 +26203,7 @@ def post_ops_kiosk_sync_approved_run(
         if not registry.kiosk_line_config_enabled:
             raise HTTPException(
                 status_code=503,
-                detail="kiosk_line_config 테이블이 없습니다. portfolio_aps_v20/sql/22_kiosk_control_plane_v1.sql을 먼저 적용하세요.",
+                detail="kiosk_line_config 테이블이 없습니다. bohae_aps_v20/sql/22_kiosk_control_plane_v1.sql을 먼저 적용하세요.",
             )
         approval_row = registry.fetch_approval(run_id.strip()) if registry.approval_enabled else None
         if approval_row is None:
@@ -26345,7 +26345,7 @@ def upsert_ops_kiosk_line(
         if not registry.kiosk_line_config_enabled:
             raise HTTPException(
                 status_code=503,
-                detail="kiosk_line_config 테이블이 없습니다. portfolio_aps_v20/sql/22_kiosk_control_plane_v1.sql을 먼저 적용하세요.",
+                detail="kiosk_line_config 테이블이 없습니다. bohae_aps_v20/sql/22_kiosk_control_plane_v1.sql을 먼저 적용하세요.",
             )
 
         actor = _require_kiosk_line_editor(registry, actor_claims, line_id=line_id.strip())
@@ -26411,7 +26411,7 @@ def _execute_ops_kiosk_line_status_action(
         if not registry.kiosk_line_config_enabled:
             raise HTTPException(
                 status_code=503,
-                detail="kiosk_line_config 테이블이 없습니다. portfolio_aps_v20/sql/22_kiosk_control_plane_v1.sql을 먼저 적용하세요.",
+                detail="kiosk_line_config 테이블이 없습니다. bohae_aps_v20/sql/22_kiosk_control_plane_v1.sql을 먼저 적용하세요.",
             )
         actor = _require_kiosk_line_editor(registry, actor_claims, line_id=line_id.strip())
         before = registry.fetch_kiosk_line_config(line_id.strip()) or {}
@@ -26648,7 +26648,7 @@ def upsert_ops_kiosk_device(
         if not registry.kiosk_device_assignment_enabled:
             raise HTTPException(
                 status_code=503,
-                detail="kiosk_device_assignment 테이블이 없습니다. portfolio_aps_v20/sql/22_kiosk_control_plane_v1.sql을 먼저 적용하세요.",
+                detail="kiosk_device_assignment 테이블이 없습니다. bohae_aps_v20/sql/22_kiosk_control_plane_v1.sql을 먼저 적용하세요.",
             )
 
         actor = _require_manager_or_admin(registry, actor_claims)
@@ -26705,7 +26705,7 @@ def list_ops_kiosk_decisions(
         if not registry.decision_log_enabled:
             raise HTTPException(
                 status_code=503,
-                detail="decision_log 테이블이 없습니다. portfolio_aps_v20/sql/20_app_ops_foundation_v1.sql을 먼저 적용하세요.",
+                detail="decision_log 테이블이 없습니다. bohae_aps_v20/sql/20_app_ops_foundation_v1.sql을 먼저 적용하세요.",
             )
         _require_manager_or_admin(registry, actor_claims)
 
@@ -27098,7 +27098,7 @@ def save_demand(
 
 @app.get("/v1/demand/list", response_model=DemandListResponse)
 def list_demand(
-    scenario_id: str = Query("BASELINE"),
+    scenario_id: str = Query("LIVE_BASE"),
     actor_claims: Dict[str, Any] = Depends(get_current_actor),
 ) -> DemandListResponse:
     """List demand data for a scenario."""
@@ -27140,7 +27140,7 @@ from .gantt_validator import (
 
 async def api_validate_gantt_move(
     req: GanttMoveRequest,
-    x_run_id: str = Header("", alias="X-Portfolio-Run-Id"),
+    x_run_id: str = Header("", alias="X-Bohae-Run-Id"),
     actor_claims: Dict[str, Any] = Depends(get_current_actor),
 ) -> GanttMoveResponse:
     """Validate a proposed Gantt chart drag-and-drop move (<10ms)."""
@@ -27149,7 +27149,7 @@ async def api_validate_gantt_move(
         actor = _require_authenticated_user(registry, actor_claims)
         run_id = _clean_text(x_run_id)
         if not run_id:
-            raise HTTPException(status_code=400, detail="X-Portfolio-Run-Id 헤더가 필요합니다.")
+            raise HTTPException(status_code=400, detail="X-Bohae-Run-Id 헤더가 필요합니다.")
 
         run_row = registry.fetch_run(run_id)
         if not run_row:
@@ -27189,7 +27189,7 @@ async def api_force_apply_gantt_move(
         if not registry.operation_receipt_enabled:
             raise HTTPException(
                 status_code=503,
-                detail="operation_receipt 테이블이 없습니다. portfolio_aps_v20/sql/44_operation_kernel_v1.sql을 먼저 적용하세요.",
+                detail="operation_receipt 테이블이 없습니다. bohae_aps_v20/sql/44_operation_kernel_v1.sql을 먼저 적용하세요.",
             )
         operation_request_id = f"REQ_FORCE_APPLY_{uuid.uuid4().hex[:12].upper()}"
         entity_type = "run" if str(req.run_id or "").strip() else "segment"

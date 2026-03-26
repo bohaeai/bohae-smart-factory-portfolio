@@ -363,7 +363,7 @@ def apply_capability_overlay(
             new_row["_LINE_ID_N"] = line_id
             new_row["_PRODUCT_ID_N"] = product_id
             if "SCENARIO_ID" in df.columns and s(new_row.get("SCENARIO_ID")) == "":
-                new_row["SCENARIO_ID"] = "BASELINE"
+                new_row["SCENARIO_ID"] = "LIVE_BASE"
             if "LINE_PRODUCT_CAPABILITY_ID" in df.columns and s(new_row.get("LINE_PRODUCT_CAPABILITY_ID")) == "":
                 new_row["LINE_PRODUCT_CAPABILITY_ID"] = f"LPC_PATCH_{line_id}_{product_id}"
             if "IS_ACTIVE" in df.columns:

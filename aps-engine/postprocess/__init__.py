@@ -9,4 +9,4 @@ This avoids crashing the APS CLI when optional reporting dependencies
 """
 
 # Intentionally empty. Import what you need explicitly, e.g.:
-#   from portfolio_aps_v20.postprocess.audit_runner import safe_generate_rich_report
+#   from bohae_aps_v20.postprocess.audit_runner import safe_generate_rich_report

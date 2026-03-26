@@ -4,7 +4,7 @@ from pathlib import Path
 
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
-APP_ROOT = REPO_ROOT / "mes_frontend" / "src" / "app"
+APP_ROOT = REPO_ROOT / "bohae_ops_web" / "src" / "app"
 
 
 def test_next_app_pages_and_layouts_do_not_import_server_modules_directly() -> None:

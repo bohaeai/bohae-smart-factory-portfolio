@@ -151,8 +151,8 @@ def add_hard_constraints(
     # This models a single shared operation lane across both lines.
     b3_mutex_interval_cnt = 0
     if bool(getattr(config, "enforce_b3_can_pet_mutex", False)):
-        b3_can_line = "LINE_A_B3_01"
-        b3_pet_line = "LINE_A_B3_02"
+        b3_can_line = "LINE_JSNG_B3_01"
+        b3_pet_line = "LINE_JSNG_B3_02"
         shared_intervals: List[Any] = []
         for ln in (b3_can_line, b3_pet_line):
             for t in line_tasks.get(ln, []) or []:
@@ -230,7 +230,7 @@ def add_hard_constraints(
                 model.Add(t["END"] <= int(hi)).OnlyEnforceIf(t["PRES"])
 
     # Optional policy: enforce single-product stream on selected lines
-    # (e.g., LINE_A_B1_01 must run only one PRODUCT_ID over the horizon)
+    # (e.g., LINE_JSNG_B1_01 must run only one PRODUCT_ID over the horizon)
     single_lines_raw = s(getattr(config, "single_product_lines_csv", ""))
     if single_lines_raw:
         selected_lines = sorted({token.strip() for token in single_lines_raw.split(",") if token and token.strip()})

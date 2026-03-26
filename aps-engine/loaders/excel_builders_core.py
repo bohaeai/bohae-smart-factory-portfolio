@@ -47,7 +47,7 @@ def build_staff_master(sheets: Dict[str, pd.DataFrame], scenario: str) -> Dict[s
         return {}
 
     # SSOT column compatibility:
-    # - STAFF_NAME_KO is the canonical name column in current Portfolio sheets.
+    # - STAFF_NAME_KO is the canonical name column in current Bohae sheets.
     # - ROLE_ID + IS_PLANNABLE are required to build role-based staffing pools (crew-rule mode).
     df40 = ensure_cols(df40, ["STAFF_ID", "STAFF_NAME", "STAFF_NAME_KO", "ROLE_ID", "IS_PLANNABLE", "IS_ACTIVE"])
 

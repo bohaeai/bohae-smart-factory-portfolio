@@ -1,7 +1,7 @@
 import React, { useState, useMemo, useEffect, useCallback, useRef } from 'react';
 import { PlanResultView, type RenderpackData } from '@/components/ops/PlanResultView';
 import { Icon, Button, Dialog, Intent, Tag, Spinner, ProgressBar, InputGroup, Checkbox, Card, Tooltip, TextArea, Classes, Callout } from '@blueprintjs/core';
-import { PortfolioLogo } from '@/components/PortfolioLogo';
+import { BohaeLogo } from '@/components/BohaeLogo';
 import { CommandPalette, type CommandItem } from '@/components/ops/CommandPalette';
 import { useOpsV2Data } from '@/features/ops-v2/hooks/useOpsV2Data';
 import { useRunMutations } from '@/features/ops-v2/hooks/useRunMutations';
@@ -804,7 +804,7 @@ export function OpsConsoleV3({
             onClick={() => handleTabSwitch('runs')}
             aria-label="실행 콘솔 홈"
         >
-            <PortfolioLogo variant="mark" className={styles.sidebarLogoMark} />
+            <BohaeLogo variant="mark" className={styles.sidebarLogoMark} />
         </button>
     );
 
@@ -903,9 +903,9 @@ export function OpsConsoleV3({
                     </Tooltip>
                     <Tooltip content="테마 전환">
                         <button type="button" id="OPS-UI-001" onClick={toggleTheme} className={styles.iconBtn} aria-label="테마 전환">
-                            <span className="portfolio-theme-toggle-icon">
-                                <Icon icon="moon" size={20} className="portfolio-theme-icon-moon" />
-                                <Icon icon="flash" size={20} className="portfolio-theme-icon-flash" />
+                            <span className="bohae-theme-toggle-icon">
+                                <Icon icon="moon" size={20} className="bohae-theme-icon-moon" />
+                                <Icon icon="flash" size={20} className="bohae-theme-icon-flash" />
                             </span>
                         </button>
                     </Tooltip>
@@ -1277,7 +1277,7 @@ export function OpsConsoleV3({
                                                 }).join('\n');
                                                 const blob = new Blob([BOM + header + rows], { type: 'text/csv;charset=utf-8;' });
                                                 const url = URL.createObjectURL(blob);
-                                                const a = document.createElement('a'); a.href = url; a.download = `portfolio_runs_${new Date().toISOString().split('T')[0]}.csv`;
+                                                const a = document.createElement('a'); a.href = url; a.download = `bohae_runs_${new Date().toISOString().split('T')[0]}.csv`;
                                                 document.body.appendChild(a); a.click(); document.body.removeChild(a);
                                             }}
                                                 className={styles.csvExportBtn}

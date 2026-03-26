@@ -15,7 +15,7 @@ CREATE TABLE IF NOT EXISTS ontology.factory_object (
   name_ko      TEXT NOT NULL,
   name_en      TEXT,
   parent_id    TEXT,               -- 계층 구조 (라인→건물)
-  plant_id     TEXT DEFAULT 'SITE_A',
+  plant_id     TEXT DEFAULT 'JSNG',
   location     TEXT,
   status       TEXT DEFAULT 'ACTIVE',
   properties   JSONB DEFAULT '{}',
@@ -36,7 +36,7 @@ SELECT
   line_id,
   'LINE',
   line_name_ko,
-  'SITE_A',
+  'JSNG',
   jsonb_build_object(
     'source', 'ssot.t_line_master',
     'synced_at', now()::text
@@ -317,7 +317,7 @@ SELECT
   fo.object_type,
   fo.name_ko,
   COALESCE(p.object_type, 'PLANT'),
-  COALESCE(p.name_ko, 'Plant A'),
+  COALESCE(p.name_ko, 'JSNG 장성공장'),
   'BELONGS_TO',
   1.0
 FROM ontology.factory_object fo

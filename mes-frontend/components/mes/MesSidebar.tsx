@@ -4,7 +4,7 @@ import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { usePathname, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { Icon, Tooltip } from "@blueprintjs/core";
-import { PortfolioLogo } from "@/components/PortfolioLogo";
+import { BohaeLogo } from "@/components/BohaeLogo";
 import { useRole } from "@/hooks/useRole";
 import { getKioskBase } from "@/lib/runtime-urls";
 import { FACTORY_OS_MENU_SECTIONS, FACTORY_OS_ROUTES, filterFactoryOsMenuSections } from "@/lib/factory-os-navigation";
@@ -156,7 +156,7 @@ export function MesSidebar() {
                 <div className={styles.logoHeader}>
                     <Link className={styles.logoArea} href={FACTORY_OS_ROUTES.home} onClick={closeMobile} aria-label={language === "en" ? "Go to Factory OS home" : "Factory OS 홈으로 이동"}>
                         <span className={styles.logoMarkWrap} aria-hidden>
-                            <PortfolioLogo
+                            <BohaeLogo
                                 variant="mark"
                                 className={collapsed ? styles.logoMarkCollapsed : styles.logoMark}
                                 alt="보해양조 로고"

@@ -1,19 +1,19 @@
 /**
  * ============================================================
- *  Portfolio ESP32 Counter Publisher (PCNT + MQTT)
+ *  Bohae ESP32 Counter Publisher (PCNT + MQTT)
  * ============================================================
  *
- * ESP32 -> Wi-Fi -> MQTT/TLS(8883) -> broker -> ingest -> DB
+ * ESP32 → Wi-Fi → MQTT/TLS(8883) → bohae_mosquitto → ingest → DB
  *
  * 레포 계약:
  *   - ESP32는 HTTP API로 직접 보내지 않는다. MQTT로만 보낸다.
- *   - topic: factory/v1/line/<LINE_ID>/counter
+ *   - topic: bohae/v1/line/<LINE_ID>/counter
  *   - 필수 키: device_id, seq, ts_ms, total_count
  *
  * PCNT 하드웨어 펄스 카운터 (300~600 BPM 정확)
  * 5초마다 publish
  *
- * Example-only firmware. Replace placeholders before use.
+ * ★ CONFIG 섹션만 수정하면 현장 배포 가능 ★
  * ============================================================
  */
 
@@ -25,17 +25,17 @@
 #include "esp_mac.h"
 
 // ===================================================================
-//  Example configuration
+//  ★★★  CONFIG — 목요일에 이것만 바꾸면 됨  ★★★
 // ===================================================================
-const char* WIFI_SSID_CFG     = "YOUR_WIFI_SSID";
-const char* WIFI_PASSWORD_CFG = "YOUR_WIFI_PASSWORD";
-const char* MQTT_HOST_CFG     = "broker.example.com";
-const int   MQTT_PORT_CFG     = 8883;
-const char* MQTT_USER_CFG     = "demo_mqtt_user";
-const char* MQTT_PASS_CFG     = "YOUR_MQTT_PASSWORD";
-const char* LINE_ID_CFG       = "LINE_A_01";
-const int   COUNTER_GPIO_CFG  = 5;
-const int   PUBLISH_MS        = 5000;
+const char* WIFI_SSID_CFG     = "생산time";             // 현장 Wi-Fi
+const char* WIFI_PASSWORD_CFG = "[REDACTED_WIFI_PW]";            // Wi-Fi 비번
+const char* MQTT_HOST_CFG     = "[REDACTED_BROKER_IP]";      // 맥미니 공인 IP
+const int   MQTT_PORT_CFG     = 8883;                 // TLS
+const char* MQTT_USER_CFG     = "bohae_mqtt";
+const char* MQTT_PASS_CFG     = "[REDACTED_MQTT_PW]";  // 서버 .env 기준
+const char* LINE_ID_CFG       = "LINE_JSNG_B1_02";    // canonical line_id (제조 1동 2호기)
+const int   COUNTER_GPIO_CFG  = 5;                     // Nano ESP32 D2 = GPIO 5
+const int   PUBLISH_MS        = 5000;                  // 5초
 const int   TARGET_QTY_CFG    = 0;
 // ===================================================================
 
@@ -202,12 +202,12 @@ void setup() {
   Serial.begin(115200);
   delay(1000);
   Serial.println("========================================");
-  Serial.println(" Portfolio ESP32 Counter (PCNT + MQTT/TLS)");
+  Serial.println(" Bohae ESP32 Counter (PCNT + MQTT/TLS)");
   Serial.println("========================================");
 
   deviceId = makeDeviceId();
   bootId   = makeBootId();
-  topic    = String("factory/v1/line/") + LINE_ID_CFG + "/counter";
+  topic    = String("bohae/v1/line/") + LINE_ID_CFG + "/counter";
 
   Serial.println("device_id = " + deviceId);
   Serial.println("boot_id   = " + bootId);

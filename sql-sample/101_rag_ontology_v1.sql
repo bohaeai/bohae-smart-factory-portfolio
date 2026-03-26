@@ -142,7 +142,7 @@ CREATE TABLE IF NOT EXISTS ontology.rag_document_link (
   link_id         SERIAL PRIMARY KEY,
   doc_id          INT NOT NULL REFERENCES ontology.rag_document(doc_id) ON DELETE CASCADE,
   target_type     TEXT NOT NULL,                -- LINE / EQUIPMENT / PRODUCT / PROCESS / SOP / STAFF
-  target_id       TEXT NOT NULL,                -- e.g. LINE_A_B1_01, EQ_FILLER_01
+  target_id       TEXT NOT NULL,                -- e.g. LINE_JSNG_B1_01, EQ_FILLER_01
   link_type       TEXT NOT NULL DEFAULT 'MENTIONS',  -- MENTIONS / ABOUT / MANUAL_FOR / SOP_FOR
   confidence      REAL DEFAULT 1.0,            -- 자동 링크시 신뢰도
   source          TEXT DEFAULT 'AUTO',         -- AUTO / MANUAL / AI

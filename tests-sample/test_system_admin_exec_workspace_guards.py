@@ -11,7 +11,7 @@ def _read(path: str) -> str:
 
 
 def test_system_page_is_a_manager_admin_home_and_not_a_general_user_surface() -> None:
-    text = _read("mes_frontend/src/app/system/SystemPageClient.tsx")
+    text = _read("bohae_ops_web/src/app/system/SystemPageClient.tsx")
 
     assert "운영관리 권한이 있는 사용자만 이 화면을 사용할 수 있습니다." in text
     assert "일반 사용자에게는 사용자 초대, 과제 배정, 기여·주의, 정책, 동기화 같은 관리 기능을 전면 노출하지 않습니다." in text
@@ -27,7 +27,7 @@ def test_system_page_is_a_manager_admin_home_and_not_a_general_user_surface() ->
 
 
 def test_executive_dashboard_prefers_kpi_bottleneck_and_ai_summary_over_raw_telemetry() -> None:
-    text = _read("mes_frontend/src/components/dashboard/ExecutiveDashboardClient.tsx")
+    text = _read("bohae_ops_web/src/components/dashboard/ExecutiveDashboardClient.tsx")
 
     assert "buildFeedbackWeeklyInsight" in text
     assert "AI 주간 요약" in text

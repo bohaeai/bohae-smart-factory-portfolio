@@ -55,7 +55,7 @@ def _run_bundle_and_get_manifest(
     cmd = [
         sys.executable,
         "-m",
-        "portfolio_aps_v20.tools.run_bundle",
+        "bohae_aps_v20.tools.run_bundle",
         "--run-id",
         run_id,
         "--ssot",

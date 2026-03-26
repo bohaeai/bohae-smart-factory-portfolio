@@ -311,78 +311,78 @@ def extract_result(
             return name_ko
         return s(row.get("ERP_PRODUCT_NAME_KO"))
 
-    def _is_family_alpha(row: Dict[str, Any]) -> bool:
-        return "FAMILY_ALPHA" in _plan_blob(row)
+    def _is_leaf(row: Dict[str, Any]) -> bool:
+        return "잎새" in _plan_blob(row)
 
-    def _is_family_beta(row: Dict[str, Any]) -> bool:
+    def _is_coolpis(row: Dict[str, Any]) -> bool:
         blob = _plan_blob(row)
-        return ("FAMILY_BETA" in blob) or ("FAMILY_BETA" in blob.upper())
+        return ("쿨피스" in blob) or ("COOLPIS" in blob.upper())
 
-    def _is_series_gamma(row: Dict[str, Any]) -> bool:
-        return "SERIES_GAMMA" in _plan_blob(row)
+    def _is_sprint(row: Dict[str, Any]) -> bool:
+        return "스프린트" in _plan_blob(row)
 
-    def _is_family_beta_peach(row: Dict[str, Any]) -> bool:
+    def _is_coolpis_peach(row: Dict[str, Any]) -> bool:
         blob = _plan_blob(row)
         up = blob.upper()
-        return (("FAMILY_BETA" in blob) or ("FAMILY_BETA" in up)) and ("PEACH" in blob or "PEACH" in up)
+        return (("쿨피스" in blob) or ("COOLPIS" in up)) and ("복숭아" in blob or "PEACH" in up)
 
-    def _is_sku_alpha_16_640(row: Dict[str, Any]) -> bool:
+    def _is_yeopsaeju_16_640(row: Dict[str, Any]) -> bool:
         blob = _plan_blob(row)
-        return ("SKU_ALPHA" in blob) and ("16%" in blob) and ("640" in blob)
+        return ("잎새주" in blob) and ("16%" in blob) and ("640" in blob)
 
-    def _is_sku_delta(row: Dict[str, Any]) -> bool:
-        return "SKU_DELTA" in _plan_blob(row)
+    def _is_maesilwon(row: Dict[str, Any]) -> bool:
+        return "매실원" in _plan_blob(row)
 
-    def _is_sku_epsilon_18000(row: Dict[str, Any]) -> bool:
+    def _is_maehyang_18000(row: Dict[str, Any]) -> bool:
         blob = _plan_blob(row)
-        return ("SKU_EPSILON" in blob) and ("18000" in blob or "18,000" in blob)
+        return ("매향" in blob) and ("18000" in blob or "18,000" in blob)
 
-    family_alpha_enabled = bool(getattr(config, "forbid_family_alpha_on_b3", False))
-    family_alpha_rows = [
+    leaf_enabled = bool(getattr(config, "forbid_leaf_on_b3", False))
+    leaf_rows = [
         r
         for r in scheduled_rows
-        if _is_family_alpha(r) and s(r.get("CHOSEN_LINE_ID")).upper().startswith("LINE_A_B3_")
+        if _is_leaf(r) and s(r.get("CHOSEN_LINE_ID")).upper().startswith("LINE_JSNG_B3_")
     ]
-    _policy_result("NO_FAMILY_ALPHA_ON_B3", family_alpha_enabled, len(family_alpha_rows) == 0, f"violations={len(family_alpha_rows)}", len(family_alpha_rows))
-    family_alpha_allowed_lines = {
+    _policy_result("NO_LEAF_ON_B3", leaf_enabled, len(leaf_rows) == 0, f"violations={len(leaf_rows)}", len(leaf_rows))
+    leaf_allowed_lines = {
         token.strip()
-        for token in str(getattr(config, "family_alpha_allowed_lines_csv", "") or "").split(",")
+        for token in str(getattr(config, "leaf_allowed_lines_csv", "") or "").split(",")
         if token.strip()
     }
-    family_alpha_allowed_enabled = bool(family_alpha_allowed_lines)
-    family_alpha_allowed_rows = [
-        r for r in scheduled_rows if _is_family_alpha(r) and s(r.get("CHOSEN_LINE_ID")) not in family_alpha_allowed_lines
+    leaf_allowed_enabled = bool(leaf_allowed_lines)
+    leaf_allowed_rows = [
+        r for r in scheduled_rows if _is_leaf(r) and s(r.get("CHOSEN_LINE_ID")) not in leaf_allowed_lines
     ]
     _policy_result(
-        "FAMILY_ALPHA_ALLOWED_LINES_ONLY",
-        family_alpha_allowed_enabled,
-        len(family_alpha_allowed_rows) == 0,
-        f"violations={len(family_alpha_allowed_rows)} allowed={','.join(sorted(family_alpha_allowed_lines))}",
-        len(family_alpha_allowed_rows),
+        "LEAF_ALLOWED_LINES_ONLY",
+        leaf_allowed_enabled,
+        len(leaf_allowed_rows) == 0,
+        f"violations={len(leaf_allowed_rows)} allowed={','.join(sorted(leaf_allowed_lines))}",
+        len(leaf_allowed_rows),
     )
 
-    family_beta_enabled = bool(getattr(config, "forbid_family_beta_on_b4", False))
-    family_beta_rows = [
+    coolpis_enabled = bool(getattr(config, "forbid_coolpis_on_b4", False))
+    coolpis_rows = [
         r
         for r in scheduled_rows
-        if _is_family_beta(r) and s(r.get("CHOSEN_LINE_ID")).upper().startswith("LINE_A_B4_")
+        if _is_coolpis(r) and s(r.get("CHOSEN_LINE_ID")).upper().startswith("LINE_JSNG_B4_")
     ]
-    _policy_result("NO_FAMILY_BETA_ON_B4", family_beta_enabled, len(family_beta_rows) == 0, f"violations={len(family_beta_rows)}", len(family_beta_rows))
-    family_beta_allowed_lines = {
+    _policy_result("NO_COOLPIS_ON_B4", coolpis_enabled, len(coolpis_rows) == 0, f"violations={len(coolpis_rows)}", len(coolpis_rows))
+    coolpis_allowed_lines = {
         token.strip()
-        for token in str(getattr(config, "family_beta_allowed_lines_csv", "") or "").split(",")
+        for token in str(getattr(config, "coolpis_allowed_lines_csv", "") or "").split(",")
         if token.strip()
     }
-    family_beta_allowed_enabled = bool(family_beta_allowed_lines)
-    family_beta_allowed_rows = [
-        r for r in scheduled_rows if _is_family_beta(r) and s(r.get("CHOSEN_LINE_ID")) not in family_beta_allowed_lines
+    coolpis_allowed_enabled = bool(coolpis_allowed_lines)
+    coolpis_allowed_rows = [
+        r for r in scheduled_rows if _is_coolpis(r) and s(r.get("CHOSEN_LINE_ID")) not in coolpis_allowed_lines
     ]
     _policy_result(
-        "FAMILY_BETA_ALLOWED_LINES_ONLY",
-        family_beta_allowed_enabled,
-        len(family_beta_allowed_rows) == 0,
-        f"violations={len(family_beta_allowed_rows)} allowed={','.join(sorted(family_beta_allowed_lines))}",
-        len(family_beta_allowed_rows),
+        "COOLPIS_ALLOWED_LINES_ONLY",
+        coolpis_allowed_enabled,
+        len(coolpis_allowed_rows) == 0,
+        f"violations={len(coolpis_allowed_rows)} allowed={','.join(sorted(coolpis_allowed_lines))}",
+        len(coolpis_allowed_rows),
     )
 
     forbidden_line_ids = {
@@ -400,97 +400,97 @@ def extract_result(
         len(forbidden_rows),
     )
 
-    series_gamma_allowed_lines = {
+    sprint_allowed_lines = {
         token.strip()
-        for token in str(getattr(config, "series_gamma_allowed_lines_csv", "") or "").split(",")
+        for token in str(getattr(config, "sprint_allowed_lines_csv", "") or "").split(",")
         if token.strip()
     }
-    series_gamma_enabled = bool(series_gamma_allowed_lines)
-    series_gamma_rows = [
-        r for r in scheduled_rows if _is_series_gamma(r) and s(r.get("CHOSEN_LINE_ID")) not in series_gamma_allowed_lines
+    sprint_enabled = bool(sprint_allowed_lines)
+    sprint_rows = [
+        r for r in scheduled_rows if _is_sprint(r) and s(r.get("CHOSEN_LINE_ID")) not in sprint_allowed_lines
     ]
     _policy_result(
-        "SERIES_GAMMA_ALLOWED_LINES_ONLY",
-        series_gamma_enabled,
-        len(series_gamma_rows) == 0,
-        f"violations={len(series_gamma_rows)} allowed={','.join(sorted(series_gamma_allowed_lines))}",
-        len(series_gamma_rows),
+        "SPRINT_ALLOWED_LINES_ONLY",
+        sprint_enabled,
+        len(sprint_rows) == 0,
+        f"violations={len(sprint_rows)} allowed={','.join(sorted(sprint_allowed_lines))}",
+        len(sprint_rows),
     )
 
-    family_beta_peach_allowed_lines = {
+    coolpis_peach_allowed_lines = {
         token.strip()
-        for token in str(getattr(config, "family_beta_peach_allowed_lines_csv", "") or "").split(",")
+        for token in str(getattr(config, "coolpis_peach_allowed_lines_csv", "") or "").split(",")
         if token.strip()
     }
-    family_beta_peach_enabled = bool(family_beta_peach_allowed_lines)
-    family_beta_peach_rows = [
+    coolpis_peach_enabled = bool(coolpis_peach_allowed_lines)
+    coolpis_peach_rows = [
         r
         for r in scheduled_rows
-        if _is_family_beta_peach(r) and s(r.get("CHOSEN_LINE_ID")) not in family_beta_peach_allowed_lines
+        if _is_coolpis_peach(r) and s(r.get("CHOSEN_LINE_ID")) not in coolpis_peach_allowed_lines
     ]
     _policy_result(
-        "FAMILY_BETA_PEACH_ALLOWED_LINES_ONLY",
-        family_beta_peach_enabled,
-        len(family_beta_peach_rows) == 0,
-        f"violations={len(family_beta_peach_rows)} allowed={','.join(sorted(family_beta_peach_allowed_lines))}",
-        len(family_beta_peach_rows),
+        "COOLPIS_PEACH_ALLOWED_LINES_ONLY",
+        coolpis_peach_enabled,
+        len(coolpis_peach_rows) == 0,
+        f"violations={len(coolpis_peach_rows)} allowed={','.join(sorted(coolpis_peach_allowed_lines))}",
+        len(coolpis_peach_rows),
     )
 
-    sku_alpha_640_allowed_lines = {
+    yeopsaeju_640_allowed_lines = {
         token.strip()
-        for token in str(getattr(config, "sku_alpha_640_allowed_lines_csv", "") or "").split(",")
+        for token in str(getattr(config, "yeopsaeju_640_allowed_lines_csv", "") or "").split(",")
         if token.strip()
     }
-    sku_alpha_640_enabled = bool(sku_alpha_640_allowed_lines)
-    sku_alpha_640_rows = [
+    yeopsaeju_640_enabled = bool(yeopsaeju_640_allowed_lines)
+    yeopsaeju_640_rows = [
         r
         for r in scheduled_rows
-        if _is_sku_alpha_16_640(r) and s(r.get("CHOSEN_LINE_ID")) not in sku_alpha_640_allowed_lines
+        if _is_yeopsaeju_16_640(r) and s(r.get("CHOSEN_LINE_ID")) not in yeopsaeju_640_allowed_lines
     ]
     _policy_result(
-        "SKU_ALPHA_16_640_ALLOWED_LINES_ONLY",
-        sku_alpha_640_enabled,
-        len(sku_alpha_640_rows) == 0,
-        f"violations={len(sku_alpha_640_rows)} allowed={','.join(sorted(sku_alpha_640_allowed_lines))}",
-        len(sku_alpha_640_rows),
+        "YEOPSAEJU_16_640_ALLOWED_LINES_ONLY",
+        yeopsaeju_640_enabled,
+        len(yeopsaeju_640_rows) == 0,
+        f"violations={len(yeopsaeju_640_rows)} allowed={','.join(sorted(yeopsaeju_640_allowed_lines))}",
+        len(yeopsaeju_640_rows),
     )
 
-    sku_delta_allowed_lines = {
+    maesilwon_allowed_lines = {
         token.strip()
-        for token in str(getattr(config, "sku_delta_allowed_lines_csv", "") or "").split(",")
+        for token in str(getattr(config, "maesilwon_allowed_lines_csv", "") or "").split(",")
         if token.strip()
     }
-    sku_delta_enabled = bool(sku_delta_allowed_lines)
-    sku_delta_rows = [
+    maesilwon_enabled = bool(maesilwon_allowed_lines)
+    maesilwon_rows = [
         r
         for r in scheduled_rows
-        if _is_sku_delta(r) and s(r.get("CHOSEN_LINE_ID")) not in sku_delta_allowed_lines
+        if _is_maesilwon(r) and s(r.get("CHOSEN_LINE_ID")) not in maesilwon_allowed_lines
     ]
     _policy_result(
-        "SKU_DELTA_ALLOWED_LINES_ONLY",
-        sku_delta_enabled,
-        len(sku_delta_rows) == 0,
-        f"violations={len(sku_delta_rows)} allowed={','.join(sorted(sku_delta_allowed_lines))}",
-        len(sku_delta_rows),
+        "MAESILWON_ALLOWED_LINES_ONLY",
+        maesilwon_enabled,
+        len(maesilwon_rows) == 0,
+        f"violations={len(maesilwon_rows)} allowed={','.join(sorted(maesilwon_allowed_lines))}",
+        len(maesilwon_rows),
     )
 
-    sku_epsilon18000_allowed_lines = {
+    maehyang18000_allowed_lines = {
         token.strip()
-        for token in str(getattr(config, "sku_epsilon18000_allowed_lines_csv", "") or "").split(",")
+        for token in str(getattr(config, "maehyang18000_allowed_lines_csv", "") or "").split(",")
         if token.strip()
     }
-    sku_epsilon18000_enabled = bool(sku_epsilon18000_allowed_lines)
-    sku_epsilon18000_rows = [
+    maehyang18000_enabled = bool(maehyang18000_allowed_lines)
+    maehyang18000_rows = [
         r
         for r in scheduled_rows
-        if _is_sku_epsilon_18000(r) and s(r.get("CHOSEN_LINE_ID")) not in sku_epsilon18000_allowed_lines
+        if _is_maehyang_18000(r) and s(r.get("CHOSEN_LINE_ID")) not in maehyang18000_allowed_lines
     ]
     _policy_result(
-        "SKU_EPSILON18000_ALLOWED_LINES_ONLY",
-        sku_epsilon18000_enabled,
-        len(sku_epsilon18000_rows) == 0,
-        f"violations={len(sku_epsilon18000_rows)} allowed={','.join(sorted(sku_epsilon18000_allowed_lines))}",
-        len(sku_epsilon18000_rows),
+        "MAEHYANG18000_ALLOWED_LINES_ONLY",
+        maehyang18000_enabled,
+        len(maehyang18000_rows) == 0,
+        f"violations={len(maehyang18000_rows)} allowed={','.join(sorted(maehyang18000_allowed_lines))}",
+        len(maehyang18000_rows),
     )
 
     ml_enabled = bool(getattr(config, "forbid_ml_production", False))
@@ -507,7 +507,7 @@ def extract_result(
         [
             (safe_int(r.get("START_MIN"), 0), safe_int(r.get("END_MIN"), 0))
             for r in seg_rows
-            if s(r.get("LINE_ID")) == "LINE_A_B3_01"
+            if s(r.get("LINE_ID")) == "LINE_JSNG_B3_01"
         ],
         key=lambda x: (int(x[0]), int(x[1])),
     )
@@ -515,7 +515,7 @@ def extract_result(
         [
             (safe_int(r.get("START_MIN"), 0), safe_int(r.get("END_MIN"), 0))
             for r in seg_rows
-            if s(r.get("LINE_ID")) == "LINE_A_B3_02"
+            if s(r.get("LINE_ID")) == "LINE_JSNG_B3_02"
         ],
         key=lambda x: (int(x[0]), int(x[1])),
     )
@@ -950,14 +950,14 @@ def extract_result(
     meta_rows.append({"KEY": "FRONTEND_POLICY_STRICT", "VALUE": bool(getattr(config, "frontend_policy_strict", False))})
     meta_rows.append({"KEY": "SINGLE_PRODUCT_LINES", "VALUE": s(getattr(config, "single_product_lines_csv", ""))})
     meta_rows.append({"KEY": "FORBID_ML_PRODUCTION", "VALUE": bool(getattr(config, "forbid_ml_production", False))})
-    meta_rows.append({"KEY": "FORBID_FAMILY_ALPHA_ON_B3", "VALUE": bool(getattr(config, "forbid_family_alpha_on_b3", False))})
-    meta_rows.append({"KEY": "FORBID_FAMILY_BETA_ON_B4", "VALUE": bool(getattr(config, "forbid_family_beta_on_b4", False))})
+    meta_rows.append({"KEY": "FORBID_LEAF_ON_B3", "VALUE": bool(getattr(config, "forbid_leaf_on_b3", False))})
+    meta_rows.append({"KEY": "FORBID_COOLPIS_ON_B4", "VALUE": bool(getattr(config, "forbid_coolpis_on_b4", False))})
     meta_rows.append({"KEY": "FORBIDDEN_LINE_IDS_CSV", "VALUE": s(getattr(config, "forbidden_line_ids_csv", ""))})
-    meta_rows.append({"KEY": "SERIES_GAMMA_ALLOWED_LINES_CSV", "VALUE": s(getattr(config, "series_gamma_allowed_lines_csv", ""))})
-    meta_rows.append({"KEY": "FAMILY_BETA_PEACH_ALLOWED_LINES_CSV", "VALUE": s(getattr(config, "family_beta_peach_allowed_lines_csv", ""))})
-    meta_rows.append({"KEY": "SKU_ALPHA_640_ALLOWED_LINES_CSV", "VALUE": s(getattr(config, "sku_alpha_640_allowed_lines_csv", ""))})
-    meta_rows.append({"KEY": "SKU_DELTA_ALLOWED_LINES_CSV", "VALUE": s(getattr(config, "sku_delta_allowed_lines_csv", ""))})
-    meta_rows.append({"KEY": "SKU_EPSILON18000_ALLOWED_LINES_CSV", "VALUE": s(getattr(config, "sku_epsilon18000_allowed_lines_csv", ""))})
+    meta_rows.append({"KEY": "SPRINT_ALLOWED_LINES_CSV", "VALUE": s(getattr(config, "sprint_allowed_lines_csv", ""))})
+    meta_rows.append({"KEY": "COOLPIS_PEACH_ALLOWED_LINES_CSV", "VALUE": s(getattr(config, "coolpis_peach_allowed_lines_csv", ""))})
+    meta_rows.append({"KEY": "YEOPSAEJU_640_ALLOWED_LINES_CSV", "VALUE": s(getattr(config, "yeopsaeju_640_allowed_lines_csv", ""))})
+    meta_rows.append({"KEY": "MAESILWON_ALLOWED_LINES_CSV", "VALUE": s(getattr(config, "maesilwon_allowed_lines_csv", ""))})
+    meta_rows.append({"KEY": "MAEHYANG18000_ALLOWED_LINES_CSV", "VALUE": s(getattr(config, "maehyang18000_allowed_lines_csv", ""))})
     meta_rows.append({"KEY": "ENFORCE_B3_CAN_PET_MUTEX", "VALUE": bool(getattr(config, "enforce_b3_can_pet_mutex", False))})
     meta_rows.append({"KEY": "FAIL_ON_MISSING_ERP_MAPPING", "VALUE": bool(getattr(config, "fail_on_missing_erp_mapping", False))})
 

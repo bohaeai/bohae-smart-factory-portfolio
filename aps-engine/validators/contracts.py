@@ -299,46 +299,46 @@ class ContractValidator:
         line_type_by_id: Dict[str, str] = self.data.get("line_type_by_id") or {}
         line_active_in_horizon: Dict[str, bool] = self.data.get("line_active_in_horizon") or {}
         forbid_ml = bool(getattr(self.config, "forbid_ml_production", False))
-        forbid_family_alpha_on_b3 = bool(getattr(self.config, "forbid_family_alpha_on_b3", False))
-        forbid_family_beta_on_b4 = bool(getattr(self.config, "forbid_family_beta_on_b4", False))
+        forbid_leaf_on_b3 = bool(getattr(self.config, "forbid_leaf_on_b3", False))
+        forbid_coolpis_on_b4 = bool(getattr(self.config, "forbid_coolpis_on_b4", False))
         forbidden_line_ids = {
             token.strip()
             for token in str(getattr(self.config, "forbidden_line_ids_csv", "") or "").split(",")
             if token.strip()
         }
-        family_alpha_allowed_lines = {
+        leaf_allowed_lines = {
             token.strip()
-            for token in str(getattr(self.config, "family_alpha_allowed_lines_csv", "") or "").split(",")
+            for token in str(getattr(self.config, "leaf_allowed_lines_csv", "") or "").split(",")
             if token.strip()
         }
-        family_beta_allowed_lines = {
+        coolpis_allowed_lines = {
             token.strip()
-            for token in str(getattr(self.config, "family_beta_allowed_lines_csv", "") or "").split(",")
+            for token in str(getattr(self.config, "coolpis_allowed_lines_csv", "") or "").split(",")
             if token.strip()
         }
-        series_gamma_allowed_lines = {
+        sprint_allowed_lines = {
             token.strip()
-            for token in str(getattr(self.config, "series_gamma_allowed_lines_csv", "") or "").split(",")
+            for token in str(getattr(self.config, "sprint_allowed_lines_csv", "") or "").split(",")
             if token.strip()
         }
-        family_beta_peach_allowed_lines = {
+        coolpis_peach_allowed_lines = {
             token.strip()
-            for token in str(getattr(self.config, "family_beta_peach_allowed_lines_csv", "") or "").split(",")
+            for token in str(getattr(self.config, "coolpis_peach_allowed_lines_csv", "") or "").split(",")
             if token.strip()
         }
-        sku_alpha_640_allowed_lines = {
+        yeopsaeju_640_allowed_lines = {
             token.strip()
-            for token in str(getattr(self.config, "sku_alpha_640_allowed_lines_csv", "") or "").split(",")
+            for token in str(getattr(self.config, "yeopsaeju_640_allowed_lines_csv", "") or "").split(",")
             if token.strip()
         }
-        sku_delta_allowed_lines = {
+        maesilwon_allowed_lines = {
             token.strip()
-            for token in str(getattr(self.config, "sku_delta_allowed_lines_csv", "") or "").split(",")
+            for token in str(getattr(self.config, "maesilwon_allowed_lines_csv", "") or "").split(",")
             if token.strip()
         }
-        sku_epsilon18000_allowed_lines = {
+        maehyang18000_allowed_lines = {
             token.strip()
-            for token in str(getattr(self.config, "sku_epsilon18000_allowed_lines_csv", "") or "").split(",")
+            for token in str(getattr(self.config, "maehyang18000_allowed_lines_csv", "") or "").split(",")
             if token.strip()
         }
 
@@ -348,10 +348,10 @@ class ContractValidator:
             return ltype == "MULTI" or "_ML_" in lid
 
         def _is_b3(line_id: str) -> bool:
-            return s(line_id).upper().startswith("LINE_A_B3_")
+            return s(line_id).upper().startswith("LINE_JSNG_B3_")
 
         def _is_b4(line_id: str) -> bool:
-            return s(line_id).upper().startswith("LINE_A_B4_")
+            return s(line_id).upper().startswith("LINE_JSNG_B4_")
 
         def _name_blob(meta: Dict[str, Any]) -> str:
             # Keep policy-family classification aligned with preprocess:
@@ -363,42 +363,42 @@ class ContractValidator:
                 return " ".join([name_ko, name_en])
             return " ".join([name_en, erp_name])
 
-        def _is_family_alpha(meta: Dict[str, Any]) -> bool:
-            return "FAMILY_ALPHA" in _name_blob(meta)
+        def _is_leaf(meta: Dict[str, Any]) -> bool:
+            return "잎새" in _name_blob(meta)
 
-        def _is_family_beta(meta: Dict[str, Any]) -> bool:
+        def _is_coolpis(meta: Dict[str, Any]) -> bool:
             blob = _name_blob(meta).upper()
-            return ("FAMILY_BETA" in blob) or ("FAMILY_BETA" in blob)
+            return ("쿨피스" in blob) or ("COOLPIS" in blob)
 
-        def _is_series_gamma(meta: Dict[str, Any]) -> bool:
-            return "SERIES_GAMMA" in _name_blob(meta)
+        def _is_sprint(meta: Dict[str, Any]) -> bool:
+            return "스프린트" in _name_blob(meta)
 
-        def _is_family_beta_peach(meta: Dict[str, Any]) -> bool:
+        def _is_coolpis_peach(meta: Dict[str, Any]) -> bool:
             blob = _name_blob(meta)
             up = blob.upper()
-            return (("FAMILY_BETA" in blob) or ("FAMILY_BETA" in up)) and ("PEACH" in blob or "PEACH" in up)
+            return (("쿨피스" in blob) or ("COOLPIS" in up)) and ("복숭아" in blob or "PEACH" in up)
 
-        def _is_sku_alpha_16_640(meta: Dict[str, Any]) -> bool:
+        def _is_yeopsaeju_16_640(meta: Dict[str, Any]) -> bool:
             blob = _name_blob(meta)
-            return ("SKU_ALPHA" in blob) and ("16%" in blob) and ("640" in blob)
+            return ("잎새주" in blob) and ("16%" in blob) and ("640" in blob)
 
-        def _is_sku_delta(meta: Dict[str, Any]) -> bool:
-            return "SKU_DELTA" in _name_blob(meta)
+        def _is_maesilwon(meta: Dict[str, Any]) -> bool:
+            return "매실원" in _name_blob(meta)
 
-        def _is_sku_epsilon_18000(meta: Dict[str, Any]) -> bool:
+        def _is_maehyang_18000(meta: Dict[str, Any]) -> bool:
             blob = _name_blob(meta)
-            return ("SKU_EPSILON" in blob) and ("18000" in blob or "18,000" in blob)
+            return ("매향" in blob) and ("18000" in blob or "18,000" in blob)
 
         products = sorted({s(getattr(d, "product_id", "")) for d in demands if s(getattr(d, "product_id", ""))})
         for pid in products:
             meta = product_info.get(pid) or {}
-            is_family_alpha = _is_family_alpha(meta)
-            is_family_beta = _is_family_beta(meta)
-            is_series_gamma = _is_series_gamma(meta)
-            is_family_beta_peach = _is_family_beta_peach(meta)
-            is_sku_alpha_16_640 = _is_sku_alpha_16_640(meta)
-            is_sku_delta = _is_sku_delta(meta)
-            is_sku_epsilon_18000 = _is_sku_epsilon_18000(meta)
+            is_leaf = _is_leaf(meta)
+            is_coolpis = _is_coolpis(meta)
+            is_sprint = _is_sprint(meta)
+            is_coolpis_peach = _is_coolpis_peach(meta)
+            is_yeopsaeju_16_640 = _is_yeopsaeju_16_640(meta)
+            is_maesilwon = _is_maesilwon(meta)
+            is_maehyang_18000 = _is_maehyang_18000(meta)
             total_caps = 0
             active_caps = 0
             policy_caps = 0
@@ -419,23 +419,23 @@ class ContractValidator:
                     continue
                 if forbid_ml and _is_ml(line_id):
                     continue
-                if forbid_family_alpha_on_b3 and is_family_alpha and _is_b3(line_id):
+                if forbid_leaf_on_b3 and is_leaf and _is_b3(line_id):
                     continue
-                if forbid_family_beta_on_b4 and is_family_beta and _is_b4(line_id):
+                if forbid_coolpis_on_b4 and is_coolpis and _is_b4(line_id):
                     continue
-                if family_alpha_allowed_lines and is_family_alpha and line_id not in family_alpha_allowed_lines:
+                if leaf_allowed_lines and is_leaf and line_id not in leaf_allowed_lines:
                     continue
-                if family_beta_allowed_lines and is_family_beta and line_id not in family_beta_allowed_lines:
+                if coolpis_allowed_lines and is_coolpis and line_id not in coolpis_allowed_lines:
                     continue
-                if series_gamma_allowed_lines and is_series_gamma and line_id not in series_gamma_allowed_lines:
+                if sprint_allowed_lines and is_sprint and line_id not in sprint_allowed_lines:
                     continue
-                if family_beta_peach_allowed_lines and is_family_beta_peach and line_id not in family_beta_peach_allowed_lines:
+                if coolpis_peach_allowed_lines and is_coolpis_peach and line_id not in coolpis_peach_allowed_lines:
                     continue
-                if sku_alpha_640_allowed_lines and is_sku_alpha_16_640 and line_id not in sku_alpha_640_allowed_lines:
+                if yeopsaeju_640_allowed_lines and is_yeopsaeju_16_640 and line_id not in yeopsaeju_640_allowed_lines:
                     continue
-                if sku_delta_allowed_lines and is_sku_delta and line_id not in sku_delta_allowed_lines:
+                if maesilwon_allowed_lines and is_maesilwon and line_id not in maesilwon_allowed_lines:
                     continue
-                if sku_epsilon18000_allowed_lines and is_sku_epsilon_18000 and line_id not in sku_epsilon18000_allowed_lines:
+                if maehyang18000_allowed_lines and is_maehyang_18000 and line_id not in maehyang18000_allowed_lines:
                     continue
                 policy_caps += 1
             if total_caps <= 0:

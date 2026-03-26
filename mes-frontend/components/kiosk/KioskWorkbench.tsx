@@ -13,7 +13,7 @@ import { getKioskBase } from "@/lib/runtime-urls";
 
 type KioskTab = "monitor" | "control";
 const DEFAULT_DEVICE_ID = "KIOSK_HALL_01";
-const DEFAULT_LINE_ID = "LINE_A_B3_02";
+const DEFAULT_LINE_ID = "LINE_JSNG_B3_02";
 
 function parseTab(raw: string | null): KioskTab {
   if (raw === "control") return "control";

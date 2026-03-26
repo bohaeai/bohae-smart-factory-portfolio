@@ -98,7 +98,7 @@ class DBLoader(LoaderInterface):
             )
         except Exception as e:
             raise RuntimeError(
-                "psycopg2 connection failed. Install psycopg2-binary and verify PORTFOLIO_DB_* env vars."
+                "psycopg2 connection failed. Install psycopg2-binary and verify BOHAE_DB_* env vars."
             ) from e
 
     def close(self) -> None:

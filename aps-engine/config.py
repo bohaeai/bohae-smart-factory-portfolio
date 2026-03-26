@@ -71,34 +71,34 @@ class Config:
     # Intended for tooling (e.g., regression replay) rather than production scheduling.
     require_all_demands_active: bool = False
     # Champion default (v23): keep production inside each demand's due month unless explicitly disabled.
-    lock_demand_month: bool = _env_bool("PORTFOLIO_LOCK_DEMAND_MONTH", True)
-    use_legacy_weights: bool = _env_bool("PORTFOLIO_USE_LEGACY_WEIGHTS", True)
+    lock_demand_month: bool = _env_bool("BOHAE_LOCK_DEMAND_MONTH", True)
+    use_legacy_weights: bool = _env_bool("BOHAE_USE_LEGACY_WEIGHTS", True)
     # Frontend policy profile (default OFF; explicit run mode only)
     frontend_policy_strict: bool = False
     # Comma-separated line IDs that must run a single product only over horizon.
     single_product_lines_csv: str = ""
     # Hard bans by product family/line class (default OFF; enabled by frontend_policy_strict).
     forbid_ml_production: bool = False
-    forbid_family_alpha_on_b3: bool = False
-    forbid_family_beta_on_b4: bool = False
+    forbid_leaf_on_b3: bool = False
+    forbid_coolpis_on_b4: bool = False
     # Hard-ban selected lines from production candidates (comma-separated line IDs).
     forbidden_line_ids_csv: str = ""
     # Product-group specific allowed line overrides (comma-separated line IDs).
-    series_gamma_allowed_lines_csv: str = ""
-    family_beta_peach_allowed_lines_csv: str = ""
-    sku_alpha_640_allowed_lines_csv: str = ""
-    sku_alpha_200_allowed_lines_csv: str = ""
-    sku_delta_allowed_lines_csv: str = ""
-    sku_epsilon18000_allowed_lines_csv: str = ""
-    brand_zeta_zero_allowed_lines_csv: str = ""
-    # Reserve B3 CAN line for FAMILY_BETA family only (strict policy default).
-    reserve_b3_can_for_family_beta: bool = False
+    sprint_allowed_lines_csv: str = ""
+    coolpis_peach_allowed_lines_csv: str = ""
+    yeopsaeju_640_allowed_lines_csv: str = ""
+    yeopsaeju_200_allowed_lines_csv: str = ""
+    maesilwon_allowed_lines_csv: str = ""
+    maehyang18000_allowed_lines_csv: str = ""
+    welchzero_allowed_lines_csv: str = ""
+    # Reserve B3 CAN line for Coolpis family only (strict policy default).
+    reserve_b3_can_for_coolpis: bool = False
     # Shared-resource hard constraint: B3 CAN and B3 PET cannot run simultaneously.
     enforce_b3_can_pet_mutex: bool = True
     # Family-specific allowed line overrides (comma-separated line IDs).
     # When set, preprocess enforces "only these lines" for the matching family.
-    family_alpha_allowed_lines_csv: str = ""
-    family_beta_allowed_lines_csv: str = ""
+    leaf_allowed_lines_csv: str = ""
+    coolpis_allowed_lines_csv: str = ""
     # Contract: demanded products must have ERP mapping in product master.
     fail_on_missing_erp_mapping: bool = False
     # Frontend strict mode gate: fail run when POLICY_AUDIT has FAIL rows.
@@ -115,7 +115,7 @@ class Config:
     demand_limit: int = 0
     # If True, empty-demand horizon is treated as valid "no-work period" (not CONTRACT_FAIL).
     # If False, validator raises EMPTY:demands.
-    allow_empty_demands: bool = _env_bool("PORTFOLIO_ALLOW_EMPTY_DEMANDS", True)
+    allow_empty_demands: bool = _env_bool("BOHAE_ALLOW_EMPTY_DEMANDS", True)
     # Optional read-only transform for replay demand:
     # if due dates collapse into one month while horizon spans multiple months,
     # reconstruct due-month spread across horizon months.
@@ -190,18 +190,18 @@ class Config:
     W_SLACK_OT: int = 1
 
     # --- DB config ---
-    db_host: str = os.getenv("PORTFOLIO_DB_HOST", "localhost")
-    # GH Actions (and some shells) may export PORTFOLIO_DB_PORT as an empty string.
+    db_host: str = os.getenv("BOHAE_DB_HOST", "localhost")
+    # GH Actions (and some shells) may export BOHAE_DB_PORT as an empty string.
     # Config import must never crash on env parsing.
-    db_port: int = _env_int("PORTFOLIO_DB_PORT", 5432)
-    db_name: str = os.getenv("PORTFOLIO_DB_NAME", "portfolio_aps")
-    db_user: str = os.getenv("PORTFOLIO_DB_USER", "demo_user")
-    db_password: str = os.getenv("PORTFOLIO_DB_PASSWORD", "")
-    db_schema: str = os.getenv("PORTFOLIO_DB_SCHEMA", "ontology")
+    db_port: int = _env_int("BOHAE_DB_PORT", 5432)
+    db_name: str = os.getenv("BOHAE_DB_NAME", "bohae_aps")
+    db_user: str = os.getenv("BOHAE_DB_USER", "heoinhoe")
+    db_password: str = os.getenv("BOHAE_DB_PASSWORD", "")
+    db_schema: str = os.getenv("BOHAE_DB_SCHEMA", "ontology")
 
     # --- LLM config (Phase 3) ---
     gemini_api_key: str = os.getenv("GEMINI_API_KEY", "")
-    llm_model: str = os.getenv("PORTFOLIO_LLM_MODEL", "gemini-1.5-flash")
+    llm_model: str = os.getenv("BOHAE_LLM_MODEL", "gemini-1.5-flash")
 
     def with_overrides(
         self,
@@ -247,19 +247,19 @@ class Config:
         frontend_policy_strict: Optional[bool] = None,
         single_product_lines_csv: Optional[str] = None,
         forbid_ml_production: Optional[bool] = None,
-        forbid_family_alpha_on_b3: Optional[bool] = None,
-        forbid_family_beta_on_b4: Optional[bool] = None,
+        forbid_leaf_on_b3: Optional[bool] = None,
+        forbid_coolpis_on_b4: Optional[bool] = None,
         forbidden_line_ids_csv: Optional[str] = None,
-        family_alpha_allowed_lines_csv: Optional[str] = None,
-        family_beta_allowed_lines_csv: Optional[str] = None,
-        series_gamma_allowed_lines_csv: Optional[str] = None,
-        family_beta_peach_allowed_lines_csv: Optional[str] = None,
-        sku_alpha_640_allowed_lines_csv: Optional[str] = None,
-        sku_alpha_200_allowed_lines_csv: Optional[str] = None,
-        sku_delta_allowed_lines_csv: Optional[str] = None,
-        sku_epsilon18000_allowed_lines_csv: Optional[str] = None,
-        brand_zeta_zero_allowed_lines_csv: Optional[str] = None,
-        reserve_b3_can_for_family_beta: Optional[bool] = None,
+        leaf_allowed_lines_csv: Optional[str] = None,
+        coolpis_allowed_lines_csv: Optional[str] = None,
+        sprint_allowed_lines_csv: Optional[str] = None,
+        coolpis_peach_allowed_lines_csv: Optional[str] = None,
+        yeopsaeju_640_allowed_lines_csv: Optional[str] = None,
+        yeopsaeju_200_allowed_lines_csv: Optional[str] = None,
+        maesilwon_allowed_lines_csv: Optional[str] = None,
+        maehyang18000_allowed_lines_csv: Optional[str] = None,
+        welchzero_allowed_lines_csv: Optional[str] = None,
+        reserve_b3_can_for_coolpis: Optional[bool] = None,
         enforce_b3_can_pet_mutex: Optional[bool] = None,
         fail_on_missing_erp_mapping: Optional[bool] = None,
         fail_on_policy_violation: Optional[bool] = None,
@@ -363,32 +363,32 @@ class Config:
             c.single_product_lines_csv = str(single_product_lines_csv).strip()
         if forbid_ml_production is not None:
             c.forbid_ml_production = bool(forbid_ml_production)
-        if forbid_family_alpha_on_b3 is not None:
-            c.forbid_family_alpha_on_b3 = bool(forbid_family_alpha_on_b3)
-        if forbid_family_beta_on_b4 is not None:
-            c.forbid_family_beta_on_b4 = bool(forbid_family_beta_on_b4)
+        if forbid_leaf_on_b3 is not None:
+            c.forbid_leaf_on_b3 = bool(forbid_leaf_on_b3)
+        if forbid_coolpis_on_b4 is not None:
+            c.forbid_coolpis_on_b4 = bool(forbid_coolpis_on_b4)
         if forbidden_line_ids_csv is not None:
             c.forbidden_line_ids_csv = str(forbidden_line_ids_csv).strip()
-        if family_alpha_allowed_lines_csv is not None:
-            c.family_alpha_allowed_lines_csv = str(family_alpha_allowed_lines_csv).strip()
-        if family_beta_allowed_lines_csv is not None:
-            c.family_beta_allowed_lines_csv = str(family_beta_allowed_lines_csv).strip()
-        if series_gamma_allowed_lines_csv is not None:
-            c.series_gamma_allowed_lines_csv = str(series_gamma_allowed_lines_csv).strip()
-        if family_beta_peach_allowed_lines_csv is not None:
-            c.family_beta_peach_allowed_lines_csv = str(family_beta_peach_allowed_lines_csv).strip()
-        if sku_alpha_640_allowed_lines_csv is not None:
-            c.sku_alpha_640_allowed_lines_csv = str(sku_alpha_640_allowed_lines_csv).strip()
-        if sku_alpha_200_allowed_lines_csv is not None:
-            c.sku_alpha_200_allowed_lines_csv = str(sku_alpha_200_allowed_lines_csv).strip()
-        if sku_delta_allowed_lines_csv is not None:
-            c.sku_delta_allowed_lines_csv = str(sku_delta_allowed_lines_csv).strip()
-        if sku_epsilon18000_allowed_lines_csv is not None:
-            c.sku_epsilon18000_allowed_lines_csv = str(sku_epsilon18000_allowed_lines_csv).strip()
-        if brand_zeta_zero_allowed_lines_csv is not None:
-            c.brand_zeta_zero_allowed_lines_csv = str(brand_zeta_zero_allowed_lines_csv).strip()
-        if reserve_b3_can_for_family_beta is not None:
-            c.reserve_b3_can_for_family_beta = bool(reserve_b3_can_for_family_beta)
+        if leaf_allowed_lines_csv is not None:
+            c.leaf_allowed_lines_csv = str(leaf_allowed_lines_csv).strip()
+        if coolpis_allowed_lines_csv is not None:
+            c.coolpis_allowed_lines_csv = str(coolpis_allowed_lines_csv).strip()
+        if sprint_allowed_lines_csv is not None:
+            c.sprint_allowed_lines_csv = str(sprint_allowed_lines_csv).strip()
+        if coolpis_peach_allowed_lines_csv is not None:
+            c.coolpis_peach_allowed_lines_csv = str(coolpis_peach_allowed_lines_csv).strip()
+        if yeopsaeju_640_allowed_lines_csv is not None:
+            c.yeopsaeju_640_allowed_lines_csv = str(yeopsaeju_640_allowed_lines_csv).strip()
+        if yeopsaeju_200_allowed_lines_csv is not None:
+            c.yeopsaeju_200_allowed_lines_csv = str(yeopsaeju_200_allowed_lines_csv).strip()
+        if maesilwon_allowed_lines_csv is not None:
+            c.maesilwon_allowed_lines_csv = str(maesilwon_allowed_lines_csv).strip()
+        if maehyang18000_allowed_lines_csv is not None:
+            c.maehyang18000_allowed_lines_csv = str(maehyang18000_allowed_lines_csv).strip()
+        if welchzero_allowed_lines_csv is not None:
+            c.welchzero_allowed_lines_csv = str(welchzero_allowed_lines_csv).strip()
+        if reserve_b3_can_for_coolpis is not None:
+            c.reserve_b3_can_for_coolpis = bool(reserve_b3_can_for_coolpis)
         if enforce_b3_can_pet_mutex is not None:
             c.enforce_b3_can_pet_mutex = bool(enforce_b3_can_pet_mutex)
         if fail_on_missing_erp_mapping is not None:

@@ -38,7 +38,7 @@ def _normalize_fail_on(fail_on: Sequence[str] | None) -> tuple[str, ...]:
 def run_contract_gate(
     ssot_path: str | Path,
     *,
-    scenario: str = "BASELINE",
+    scenario: str = "LIVE_BASE",
     start: str | None = "2026-01-01",
     end: str | None = "2026-01-15",
     fail_on: Sequence[str] | None = None,
