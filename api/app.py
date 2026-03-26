@@ -2655,7 +2655,7 @@ def _get_bootstrap_admin_employee_no() -> str:
 
 
 def _build_synthetic_email(employee_no: str) -> str:
-    domain = _trim_profile_text(os.getenv("OPS_AUTH_SYNTHETIC_EMAIL_DOMAIN")) or "ops.bohae.local"
+    domain = _trim_profile_text(os.getenv("OPS_AUTH_SYNTHETIC_EMAIL_DOMAIN")) or "ops.example.local"
     return f"{employee_no}@{domain}"
 
 

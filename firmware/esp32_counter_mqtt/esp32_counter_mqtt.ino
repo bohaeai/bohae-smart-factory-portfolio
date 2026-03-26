@@ -27,7 +27,7 @@
 // ===================================================================
 //  ★★★  CONFIG — 목요일에 이것만 바꾸면 됨  ★★★
 // ===================================================================
-const char* WIFI_SSID_CFG     = "생산time";             // 현장 Wi-Fi
+const char* WIFI_SSID_CFG     = "[REDACTED_WIFI_SSID]";             // 현장 Wi-Fi
 const char* WIFI_PASSWORD_CFG = "[REDACTED_WIFI_PW]";            // Wi-Fi 비번
 const char* MQTT_HOST_CFG     = "[REDACTED_BROKER_IP]";      // 맥미니 공인 IP
 const int   MQTT_PORT_CFG     = 8883;                 // TLS
